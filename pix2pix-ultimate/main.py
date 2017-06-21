@@ -114,7 +114,7 @@ def build_model():
     pix.saver = tf.train.Saver()
 
 def load_random_samples():
-    data = np.random.choice(glob('./datasets/{0}/val/*{1}.png'.format(pix.dataset_name, wildcard)), pix.batch_size)
+    data = np.random.choice(glob('./datasets/{0}/val/*.n{1}.*.png'.format(pix.dataset_name, pix.axis)), pix.batch_size)
     sample = [load_data(sample_file) for sample_file in data]
 
     if (pix.is_grayscale):
@@ -157,7 +157,7 @@ def train():
         print(" [!] Load failed...")
 
     for epoch in xrange(pix.epoch):
-        data = glob('./datasets/{0}/train/*{1}.png'.format(pix.dataset_name, wildcard))
+        data = glob('./datasets/{0}/train/*.n{1}.*.png'.format(pix.dataset_name, axis))
         #np.random.shuffle(data)
         batch_idxs = min(len(data), pix.train_size) // pix.batch_size
 
@@ -398,7 +398,7 @@ def test():
     init_op = tf.global_variables_initializer()
     pix.sess.run(init_op)
 
-    sample_files = glob('./datasets/{0}/test/*{1}.png'.format(pix.dataset_name, wildcard))
+    sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, axis))
 
     # sort testing input
     n = [int(i) for i in map(lambda x: x.split('/')[-1].split('.png')[0], sample_files)]
