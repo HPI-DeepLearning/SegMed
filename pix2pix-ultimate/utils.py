@@ -24,7 +24,8 @@ def load_data(image_path, flip=True, is_test=False):
     img_A = img_A/127.5 - 1.
     img_B = img_B/127.5 - 1.
 
-    img_AB = np.concatenate((img_A, img_B), axis=2)
+    #img_AB = np.concatenate((img_A, img_B), axis=2)
+    img_AB = np.stack((img_A, img_B), axis=2)
     # img_AB shape: (fine_size, fine_size, input_c_dim + output_c_dim)
     return img_AB
 
@@ -58,8 +59,8 @@ def preprocess_A_and_B(img_A, img_B, load_size=286, fine_size=256, flip=True, is
 
 # -----------------------------
 
-def get_image(image_path, image_size, is_crop=True, resize_w=64, is_grayscale = False):
-    return transform(imread(image_path, is_grayscale), image_size, is_crop, resize_w)
+#def get_image(image_path, image_size, is_crop=True, resize_w=64, is_grayscale = False):
+#    return transform(imread(image_path, is_grayscale), image_size, is_crop, resize_w)
 
 def save_images(images, size, image_path):
     return imsave(inverse_transform(images), size, image_path)

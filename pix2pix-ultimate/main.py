@@ -15,8 +15,8 @@ from utils import *
 class pix():
 	axis = 'x'
 	dataset_name = 'Combined2t1ce'
-	input_c_dim = 3
-	output_c_dim = 3
+	input_c_dim = 1
+	output_c_dim = 1
 	is_grayscale = False
 	image_size = 256
 	output_size = 256
@@ -162,28 +162,39 @@ def train():
         batch_idxs = min(len(data), pix.train_size) // pix.batch_size
 
         for idx in xrange(0, batch_idxs):
+            print('a')
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
+            print('b')
             batch = [load_data(batch_file) for batch_file in batch_files]
+            print('c')
             if (pix.is_grayscale):
                 batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
             else:
                 batch_images = np.array(batch).astype(np.float32)
-
+            
+            print('d')
+                
             # Update D network
             _, summary_str = pix.sess.run([d_optim, pix.d_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
 
+            print('e')
+            
             # Update G network
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
 
+            print('f')
+            
             # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
 
+            print('g')
+            
             errD_fake = pix.d_loss_fake.eval({pix.real_data: batch_images})
             errD_real = pix.d_loss_real.eval({pix.real_data: batch_images})
             errG = pix.g_loss.eval({pix.real_data: batch_images})
@@ -194,7 +205,7 @@ def train():
                     time.time() - start_time, errD_fake+errD_real, errG))
 
             if np.mod(counter, 100) == 1:
-                sample_model(pix, epoch, idx)
+                sample_model(epoch, idx)
 
             if np.mod(counter, 500) == 2:
                 save(pix.checkpoint_dir, counter)
@@ -445,14 +456,14 @@ if not os.path.exists(pix.sample_dir):
 if not os.path.exists(pix.test_dir):
 	os.makedirs(pix.test_dir)
 
-with tf.Session() as sess:
-	pix.sess = sess
-	build_model()
-	
-	if pix.phase == 'train':
-		train()
-	else:
-		test()
-
 with tf.device('/gpu:0'):
+    with tf.Session() as sess:
+        pix.sess = sess
+        build_model()
+	
+        if pix.phase == 'train':
+            train()
+        else:
+            test()
+
 	tf.app.run()
