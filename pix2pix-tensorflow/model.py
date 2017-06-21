@@ -394,7 +394,7 @@ class pix2pix(object):
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
 
-        sample_files = glob('./datasets/{}/val/*.jpg'.format(self.dataset_name))
+        sample_files = glob('./datasets/{}/test/*.jpg'.format(self.dataset_name))
 
         # sort testing input
         n = [int(i) for i in map(lambda x: x.split('/')[-1].split('.jpg')[0], sample_files)]
