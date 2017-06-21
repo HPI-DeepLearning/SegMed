@@ -27,8 +27,8 @@ class pix():
 	train_size = 1e8
 	load_size = 286
 	fine_size = 256
-	ngf = 64
-	ndf = 64
+	gf_dim = 64
+	df_dim = 64
 	niter = 200
 	lr = 0.0002
 	beta1 = 0.5
