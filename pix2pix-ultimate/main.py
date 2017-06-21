@@ -19,7 +19,9 @@ class pix():
 	output_c_dim = 3
 	is_grayscale = False
 	image_size = 256
-
+	output_size = 256
+	sample_size = 1
+	
 	epoch = 200
 	batch_size = 16
 	train_size = 1e8
