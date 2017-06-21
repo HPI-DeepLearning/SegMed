@@ -456,14 +456,14 @@ if not os.path.exists(pix.sample_dir):
 if not os.path.exists(pix.test_dir):
 	os.makedirs(pix.test_dir)
 
-with tf.device('/gpu:0'):
-    with tf.Session() as sess:
-        pix.sess = sess
-        build_model()
+#with tf.device('/gpu:0'):
+with tf.Session() as sess:
+    pix.sess = sess
+    build_model()
 	
-        if pix.phase == 'train':
-            train()
-        else:
-            test()
+    if pix.phase == 'train':
+        train()
+    else:
+        test()
 
-    tf.app.run()
+tf.app.run()
