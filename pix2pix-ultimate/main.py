@@ -78,14 +78,14 @@ def build_model():
     pix.real_B = pix.real_data[:, :, :, :pix.input_c_dim]
     pix.real_A = pix.real_data[:, :, :, pix.input_c_dim:pix.input_c_dim + pix.output_c_dim]
 
-    pix.fake_B = pix.generator(pix.real_A)
+    pix.fake_B = generator(pix.real_A)
 
     pix.real_AB = tf.concat([pix.real_A, pix.real_B], 3)
     pix.fake_AB = tf.concat([pix.real_A, pix.fake_B], 3)
     pix.D, pix.D_logits = pix.discriminator(pix.real_AB, reuse=False)
     pix.D_, pix.D_logits_ = pix.discriminator(pix.fake_AB, reuse=True)
 
-    pix.fake_B_sample = pix.sampler(pix.real_A)
+    pix.fake_B_sample = sampler(pix.real_A)
 
     pix.d_sum = tf.summary.histogram("d", pix.D)
     pix.d__sum = tf.summary.histogram("d_", pix.D_)
