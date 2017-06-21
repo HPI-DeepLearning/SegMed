@@ -110,7 +110,7 @@ class pix2pix(object):
 
 
     def load_random_samples(self):
-        data = np.random.choice(glob('./datasets/{}/val/*.png'.format(self.dataset_name)), self.batch_size)
+        data = np.random.choice(glob('./datasets/{0}/val/*{1}.png'.format(self.dataset_name, wildcard)), self.batch_size)
         sample = [load_data(sample_file) for sample_file in data]
 
         if (self.is_grayscale):
@@ -153,7 +153,7 @@ class pix2pix(object):
             print(" [!] Load failed...")
 
         for epoch in xrange(args.epoch):
-            data = glob('./datasets/{}/train/*.png'.format(self.dataset_name))
+            data = glob('./datasets/{0}/train/*{1}.png'.format(self.dataset_name, wildcard))
             #np.random.shuffle(data)
             batch_idxs = min(len(data), args.train_size) // self.batch_size
 
@@ -394,7 +394,7 @@ class pix2pix(object):
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
 
-        sample_files = glob('./datasets/{}/test/*.png'.format(self.dataset_name))
+        sample_files = glob('./datasets/{0}/test/*{1}.png'.format(self.dataset_name, wildcard))
 
         # sort testing input
         n = [int(i) for i in map(lambda x: x.split('/')[-1].split('.png')[0], sample_files)]

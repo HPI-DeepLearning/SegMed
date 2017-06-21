@@ -33,6 +33,7 @@ parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkp
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
 parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100.0, help='weight on L1 term in objective')
+parser.add_argument('--wildcard', dest='wildcard', default='.nx.*', help='wildcard used for input filtering')
 
 args = parser.parse_args()
 
