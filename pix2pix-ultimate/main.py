@@ -18,6 +18,7 @@ class pix():
 	input_nc = 3
 	output_nc = 3
 	is_grayscale = False
+	image_size = 256
 
 	epoch = 200
 	batch_size = 16
