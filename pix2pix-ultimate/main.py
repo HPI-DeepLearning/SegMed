@@ -157,7 +157,7 @@ def train():
         print(" [!] Load failed...")
 
     for epoch in xrange(pix.epoch):
-        data = glob('./datasets/{0}/train/*.n{1}.*.png'.format(pix.dataset_name, axis))
+        data = glob('./datasets/{0}/train/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
         #np.random.shuffle(data)
         batch_idxs = min(len(data), pix.train_size) // pix.batch_size
 
@@ -398,7 +398,7 @@ def test():
     init_op = tf.global_variables_initializer()
     pix.sess.run(init_op)
 
-    sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, axis))
+    sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
 
     # sort testing input
     n = [int(i) for i in map(lambda x: x.split('/')[-1].split('.png')[0], sample_files)]
