@@ -466,4 +466,4 @@ with tf.device('/gpu:0'):
         else:
             test()
 
-	tf.app.run()
+    tf.app.run()
