@@ -84,8 +84,8 @@ def build_model():
 
     pix.real_AB = tf.concat([pix.real_A, pix.real_B], 3)
     pix.fake_AB = tf.concat([pix.real_A, pix.fake_B], 3)
-    pix.D, pix.D_logits = pix.discriminator(pix.real_AB, reuse=False)
-    pix.D_, pix.D_logits_ = pix.discriminator(pix.fake_AB, reuse=True)
+    pix.D, pix.D_logits = discriminator(pix.real_AB, reuse=False)
+    pix.D_, pix.D_logits_ = discriminator(pix.fake_AB, reuse=True)
 
     pix.fake_B_sample = sampler(pix.real_A)
 
