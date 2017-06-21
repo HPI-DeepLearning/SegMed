@@ -12,63 +12,63 @@ from utils import *
 
 # Init Parameters
 
-pix.axis = 'x'
-pix.dataset_name = 'Combined2t1ce'
-pix.input_nc = 3
-pix.output_nc = 3
-pix.is_grayscale = False
+class pix():
+	axis = 'x'
+	dataset_name = 'Combined2t1ce'
+	input_nc = 3
+	output_nc = 3
+	is_grayscale = False
 
-pix.epoch = 200
-pix.batch_size = 16
-pix.train_size = 1e8
-pix.load_size = 286
-pix.fine_size = 256
-pix.ngf = 64
-pix.ndf = 64
-pix.niter = 200
-pix.lr = 0.0002
-pix.beta1 = 0.5
-pix.flip = True
-pix.which_direction = 'AtoB'
-pix.phase = 'train'
-pix.save_epoch_freq = 50
-pix.save_latest_freq = 5000
-pix.print_freq = 50
-pix.continue_train = False
-pix.serial_batches = False
-pix.serial_batch_iter = True
-pix.checkpoint_dir = './checkpoint-{}'.format(axis)
-pix.sample_dir = './sample-{}'.format(axis)
-pix.test_dir = './test-{}'.format(axis)
-pix.L1_lambda = 100.0
+	epoch = 200
+	batch_size = 16
+	train_size = 1e8
+	load_size = 286
+	fine_size = 256
+	ngf = 64
+	ndf = 64
+	niter = 200
+	lr = 0.0002
+	beta1 = 0.5
+	flip = True
+	which_direction = 'AtoB'
+	phase = 'train'
+	save_epoch_freq = 50
+	save_latest_freq = 5000
+	print_freq = 50
+	continue_train = False
+	serial_batches = False
+	serial_batch_iter = True
+	checkpoint_dir = './checkpoint-{}'.format(axis)
+	sample_dir = './sample-{}'.format(axis)
+	test_dir = './test-{}'.format(axis)
+	L1_lambda = 100.0
 
+	# Batch normalization : deals with poor initialization helps gradient flow
 
-# Batch normalization : deals with poor initialization helps gradient flow
+	d_bn1 = batch_norm(name='d_bn1')
+	d_bn2 = batch_norm(name='d_bn2')
+	d_bn3 = batch_norm(name='d_bn3')
 
-pix.d_bn1 = batch_norm(name='d_bn1')
-pix.d_bn2 = batch_norm(name='d_bn2')
-pix.d_bn3 = batch_norm(name='d_bn3')
+	g_bn_e2 = batch_norm(name='g_bn_e2')
+	g_bn_e3 = batch_norm(name='g_bn_e3')
+	g_bn_e4 = batch_norm(name='g_bn_e4')
+	g_bn_e5 = batch_norm(name='g_bn_e5')
+	g_bn_e6 = batch_norm(name='g_bn_e6')
+	g_bn_e7 = batch_norm(name='g_bn_e7')
+	g_bn_e8 = batch_norm(name='g_bn_e8')
 
-pix.g_bn_e2 = batch_norm(name='g_bn_e2')
-pix.g_bn_e3 = batch_norm(name='g_bn_e3')
-pix.g_bn_e4 = batch_norm(name='g_bn_e4')
-pix.g_bn_e5 = batch_norm(name='g_bn_e5')
-pix.g_bn_e6 = batch_norm(name='g_bn_e6')
-pix.g_bn_e7 = batch_norm(name='g_bn_e7')
-pix.g_bn_e8 = batch_norm(name='g_bn_e8')
-
-pix.g_bn_d1 = batch_norm(name='g_bn_d1')
-pix.g_bn_d2 = batch_norm(name='g_bn_d2')
-pix.g_bn_d3 = batch_norm(name='g_bn_d3')
-pix.g_bn_d4 = batch_norm(name='g_bn_d4')
-pix.g_bn_d5 = batch_norm(name='g_bn_d5')
-pix.g_bn_d6 = batch_norm(name='g_bn_d6')
-pix.g_bn_d7 = batch_norm(name='g_bn_d7')
+	g_bn_d1 = batch_norm(name='g_bn_d1')
+	g_bn_d2 = batch_norm(name='g_bn_d2')
+	g_bn_d3 = batch_norm(name='g_bn_d3')
+	g_bn_d4 = batch_norm(name='g_bn_d4')
+	g_bn_d5 = batch_norm(name='g_bn_d5')
+	g_bn_d6 = batch_norm(name='g_bn_d6')
+	g_bn_d7 = batch_norm(name='g_bn_d7')
 
 
 # Declare Model
 
-def build_model(pix):
+def build_model():
     pix.real_data = tf.placeholder(tf.float32,
                                     [pix.batch_size, pix.image_size, pix.image_size,
                                         pix.input_c_dim + pix.output_c_dim],
@@ -110,7 +110,7 @@ def build_model(pix):
 
     pix.saver = tf.train.Saver()
 
-def load_random_samples(pix):
+def load_random_samples():
     data = np.random.choice(glob('./datasets/{0}/val/*{1}.png'.format(pix.dataset_name, wildcard)), pix.batch_size)
     sample = [load_data(sample_file) for sample_file in data]
 
@@ -120,7 +120,7 @@ def load_random_samples(pix):
         sample_images = np.array(sample).astype(np.float32)
     return sample_images
 
-def sample_model(pix, epoch, idx):
+def sample_model(epoch, idx):
     sample_images = load_random_samples(pix)
     samples, d_loss, g_loss = pix.sess.run(
         [pix.fake_B_sample, pix.d_loss, pix.g_loss],
@@ -130,7 +130,7 @@ def sample_model(pix, epoch, idx):
                 './{}/train_{:02d}_{:04d}.png'.format(pix.sample_dir, epoch, idx))
     print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
 
-def train(pix):
+def train():
     """Train pix2pix"""
     d_optim = tf.train.AdamOptimizer(pix.lr, beta1=pix.beta1) \
                         .minimize(pix.d_loss, var_list=pix.d_vars)
@@ -196,7 +196,7 @@ def train(pix):
             if np.mod(counter, 500) == 2:
                 save(pix.checkpoint_dir, counter)
 
-def discriminator(pix, image, y=None, reuse=False):
+def discriminator(image, y=None, reuse=False):
 
     with tf.variable_scope("discriminator") as scope:
 
@@ -218,7 +218,7 @@ def discriminator(pix, image, y=None, reuse=False):
 
         return tf.nn.sigmoid(h4), h4
 
-def generator(pix, image, y=None):
+def generator(image, y=None):
     with tf.variable_scope("generator") as scope:
 
         s = pix.output_size
@@ -290,7 +290,7 @@ def generator(pix, image, y=None):
 
         return tf.nn.tanh(pix.d8)
 
-def sampler(pix, image, y=None):
+def sampler(image, y=None):
 
     with tf.variable_scope("generator") as scope:
         scope.reuse_variables()
@@ -364,7 +364,7 @@ def sampler(pix, image, y=None):
 
         return tf.nn.tanh(pix.d8)
 
-def save(pix, checkpoint_dir, step):
+def save(checkpoint_dir, step):
     model_name = "pix2pix.model"
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.output_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
@@ -376,7 +376,7 @@ def save(pix, checkpoint_dir, step):
                     os.path.join(checkpoint_dir, model_name),
                     global_step=step)
 
-def load(pix, checkpoint_dir):
+def load(checkpoint_dir):
     print(" [*] Reading checkpoint...")
 
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.output_size)
@@ -390,7 +390,7 @@ def load(pix, checkpoint_dir):
     else:
         return False
 
-def test(pix):
+def test():
     """Test pix2pix"""
     init_op = tf.global_variables_initializer()
     pix.sess.run(init_op)
@@ -444,12 +444,12 @@ if not os.path.exists(pix.test_dir):
 
 with tf.Session() as sess:
 	pix.sess = sess
-	build_model(pix)
+	build_model()
 	
 	if pix.phase == 'train':
-		train(pix)
+		train()
 	else:
-		test(pix)
+		test()
 
-with tf.device('/gpu:1'):
+with tf.device('/gpu:0'):
 	tf.app.run()
