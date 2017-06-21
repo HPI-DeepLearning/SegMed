@@ -15,8 +15,8 @@ from utils import *
 class pix():
 	axis = 'x'
 	dataset_name = 'Combined2t1ce'
-	input_nc = 3
-	output_nc = 3
+	input_c_dim = 3
+	output_c_dim = 3
 	is_grayscale = False
 	image_size = 256
 
