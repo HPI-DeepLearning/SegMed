@@ -17,16 +17,12 @@ class pix():
 	dataset_name = 'Combined2t1ce'
 	input_c_dim = 1
 	output_c_dim = 1
-	is_grayscale = False
-	image_size = 256
-	output_size = 256
-	sample_size = 1
-	
+	speed_factor = 1
+    
+	image_size = 256 // speed_factor
 	epoch = 200
-	batch_size = 16
+	batch_size = 10
 	train_size = 1e8
-	load_size = 286
-	fine_size = 256
 	gf_dim = 64
 	df_dim = 64
 	niter = 200
@@ -115,16 +111,16 @@ def build_model():
 
 def load_random_samples():
     data = np.random.choice(glob('./datasets/{0}/val/*.n{1}.*.png'.format(pix.dataset_name, pix.axis)), pix.batch_size)
-    sample = [load_data(sample_file) for sample_file in data]
+    sample = [load_data(sample_file, pix.image_size) for sample_file in data]
 
-    if (pix.is_grayscale):
-        sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
-    else:
-        sample_images = np.array(sample).astype(np.float32)
+    #if (pix.is_grayscale):
+    #    sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
+    #else:
+    sample_images = np.array(sample).astype(np.float32)
     return sample_images
 
 def sample_model(epoch, idx):
-    sample_images = load_random_samples(pix)
+    sample_images = load_random_samples()
     samples, d_loss, g_loss = pix.sess.run(
         [pix.fake_B_sample, pix.d_loss, pix.g_loss],
         feed_dict={pix.real_data: sample_images}
@@ -162,38 +158,25 @@ def train():
         batch_idxs = min(len(data), pix.train_size) // pix.batch_size
 
         for idx in xrange(0, batch_idxs):
-            print('a')
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
-            print('b')
-            batch = [load_data(batch_file) for batch_file in batch_files]
-            print('c')
-            if (pix.is_grayscale):
-                batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
-            else:
-                batch_images = np.array(batch).astype(np.float32)
-            
-            print('d')
+            batch = [load_data(batch_file, pix.image_size) for batch_file in batch_files]
+
+            batch_images = np.array(batch).astype(np.float32)
                 
             # Update D network
             _, summary_str = pix.sess.run([d_optim, pix.d_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-
-            print('e')
             
             # Update G network
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-
-            print('f')
             
             # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-
-            print('g')
             
             errD_fake = pix.d_loss_fake.eval({pix.real_data: batch_images})
             errD_real = pix.d_loss_real.eval({pix.real_data: batch_images})
@@ -235,7 +218,7 @@ def discriminator(image, y=None, reuse=False):
 def generator(image, y=None):
     with tf.variable_scope("generator") as scope:
 
-        s = pix.output_size
+        s = pix.image_size
         s2, s4, s8, s16, s32, s64, s128 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128)
 
         # image is (256 x 256 x input_c_dim)
@@ -309,7 +292,7 @@ def sampler(image, y=None):
     with tf.variable_scope("generator") as scope:
         scope.reuse_variables()
 
-        s = pix.output_size
+        s = pix.image_size
         s2, s4, s8, s16, s32, s64, s128 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128)
 
         # image is (256 x 256 x input_c_dim)
@@ -380,7 +363,7 @@ def sampler(image, y=None):
 
 def save(checkpoint_dir, step):
     model_name = "pix2pix.model"
-    model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.output_size)
+    model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
     if not os.path.exists(checkpoint_dir):
@@ -393,7 +376,7 @@ def save(checkpoint_dir, step):
 def load(checkpoint_dir):
     print(" [*] Reading checkpoint...")
 
-    model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.output_size)
+    model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
     ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
@@ -417,12 +400,12 @@ def test():
 
     # load testing input
     print("Loading testing images ...")
-    sample = [load_data(sample_file, is_test=True) for sample_file in sample_files]
+    sample = [load_data(sample_file, pix.image_size, is_test=True) for sample_file in sample_files]
 
-    if (pix.is_grayscale):
-        sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
-    else:
-        sample_images = np.array(sample).astype(np.float32)
+    # (pix.is_grayscale):
+    #    sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
+    #else:
+    sample_images = np.array(sample).astype(np.float32)
 
     sample_images = [sample_images[i:i+pix.batch_size]
                         for i in xrange(0, len(sample_images), pix.batch_size)]

@@ -17,9 +17,9 @@ get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 # -----------------------------
 # new added functions for pix2pix
 
-def load_data(image_path, flip=True, is_test=False):
+def load_data(image_path, image_size, flip=True):
     img_A, img_B = load_image(image_path)
-    img_A, img_B = preprocess_A_and_B(img_A, img_B, flip=flip, is_test=is_test)
+    img_A, img_B = preprocess_A_and_B(img_A, img_B, image_size, flip=flip)
 
     img_A = img_A/127.5 - 1.
     img_B = img_B/127.5 - 1.
@@ -38,22 +38,24 @@ def load_image(image_path):
 
     return img_A, img_B
 
-def preprocess_A_and_B(img_A, img_B, load_size=286, fine_size=256, flip=True, is_test=False):
-    if is_test:
-        img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
-        img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
-    else:
-        img_A = scipy.misc.imresize(img_A, [load_size, load_size])
-        img_B = scipy.misc.imresize(img_B, [load_size, load_size])
+def preprocess_A_and_B(img_A, img_B, image_size, flip=True):
+    #if is_test:
+    #    img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
+    #    img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
+    #else:
+    offset = 16
+    hypersize = image_size + offset
+    img_A = scipy.misc.imresize(img_A, [hypersize, hypersize], interp='nearest')
+    img_B = scipy.misc.imresize(img_B, [hypersize, hypersize], interp='nearest')
 
-        h1 = int(np.ceil(np.random.uniform(1e-2, load_size-fine_size)))
-        w1 = int(np.ceil(np.random.uniform(1e-2, load_size-fine_size)))
-        img_A = img_A[h1:h1+fine_size, w1:w1+fine_size]
-        img_B = img_B[h1:h1+fine_size, w1:w1+fine_size]
+    h1 = int(np.ceil(np.random.uniform(1e-2, offset)))
+    w1 = int(np.ceil(np.random.uniform(1e-2, offset)))
+    img_A = img_A[h1:h1+image_size, w1:w1+image_size]
+    img_B = img_B[h1:h1+image_size, w1:w1+image_size]
 
-        if flip and np.random.random() > 0.5:
-            img_A = np.fliplr(img_A)
-            img_B = np.fliplr(img_B)
+    if flip and np.random.random() > 0.5:
+        img_A = np.fliplr(img_A)
+        img_B = np.fliplr(img_B)
 
     return img_A, img_B
 
