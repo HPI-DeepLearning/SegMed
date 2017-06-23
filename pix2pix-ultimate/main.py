@@ -14,14 +14,14 @@ from utils import *
 
 class pix():
 	axis = 'x'
-	dataset_name = 'Combined2t1ce'
-	input_c_dim = 1
+	dataset_name = 'Combined5'
+	input_c_dim = 4
 	output_c_dim = 1
 	speed_factor = 1
     
 	image_size = 256 // speed_factor
 	epoch = 200
-	batch_size = 10
+	batch_size = 32
 	train_size = 1e8
 	gf_dim = 64
 	df_dim = 64
@@ -73,8 +73,8 @@ def build_model():
                                         pix.input_c_dim + pix.output_c_dim],
                                     name='real_A_and_B_images')
 
-    pix.real_B = pix.real_data[:, :, :, :pix.input_c_dim]
-    pix.real_A = pix.real_data[:, :, :, pix.input_c_dim:pix.input_c_dim + pix.output_c_dim]
+    pix.real_B = pix.real_data[:, :, :, :pix.output_c_dim]
+    pix.real_A = pix.real_data[:, :, :, pix.output_c_dim:pix.input_c_dim + pix.output_c_dim]
 
     pix.fake_B = generator(pix.real_A)
 
@@ -111,7 +111,7 @@ def build_model():
 
 def load_random_samples():
     data = np.random.choice(glob('./datasets/{0}/val/*.n{1}.*.png'.format(pix.dataset_name, pix.axis)), pix.batch_size)
-    sample = [load_data(sample_file, pix.image_size) for sample_file in data]
+    sample = [load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for sample_file in data]
 
     #if (pix.is_grayscale):
     #    sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
@@ -159,7 +159,7 @@ def train():
 
         for idx in xrange(0, batch_idxs):
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
-            batch = [load_data(batch_file, pix.image_size) for batch_file in batch_files]
+            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for batch_file in batch_files]
 
             batch_images = np.array(batch).astype(np.float32)
                 
@@ -400,7 +400,7 @@ def test():
 
     # load testing input
     print("Loading testing images ...")
-    sample = [load_data(sample_file, pix.image_size, is_test=True) for sample_file in sample_files]
+    sample = [load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_test=True) for sample_file in sample_files]
 
     # (pix.is_grayscale):
     #    sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
@@ -439,7 +439,6 @@ if not os.path.exists(pix.sample_dir):
 if not os.path.exists(pix.test_dir):
 	os.makedirs(pix.test_dir)
 
-#with tf.device('/gpu:0'):
 with tf.Session() as sess:
     pix.sess = sess
     build_model()
