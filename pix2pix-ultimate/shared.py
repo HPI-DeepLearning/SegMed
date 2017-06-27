@@ -406,17 +406,11 @@ def test(pix):
             pix.fake_B_sample,
             feed_dict={pix.real_data: sample_image}
         )
-        
-        print('SI', sample_image.shape)
+       
         arr = np.split(sample_image, sample_image.shape[3], axis=3)
         arr.append(samples)
         
-        for a in arr:
-            print('a ', a.shape)
-        
         con = np.concatenate(arr, axis=2)
-        print('con ', con.shape)
-        
         save_images(con, [pix.batch_size, 1],
                     './{}/test_{:04d}.png'.format(pix.test_dir, i))
 
