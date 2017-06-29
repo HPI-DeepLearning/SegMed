@@ -16,17 +16,16 @@ def plot_history(model_results):
     ax.set_xlabel('epoch')
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-def plot_sample(ax, sample, title):
-    # The first line contains 65000 values for any reason
-    img = sample.reshape(124, 124)[1:, 1:]
-    ax.imshow(img, cmap='gray',  interpolation='nearest')
+def plot_sample(ax, sample, title, shape):
+    img = sample.reshape(*shape)
+    ax.imshow(img, cmap='gray', interpolation='nearest')
     ax.axis('off')
     ax.set_title(title)
 
 def has_tumor(one_hot_vector):
     return one_hot_vector.argmax()
     
-def plot_predicted_samples(count, samples, labels, predicted, main_title):
+def plot_predicted_samples(count, samples, labels, predicted, main_title, shape):
     # Shuffle datapoints
     idx = np.random.choice(np.arange(samples.shape[0]), count, replace=False)
     samples, labels, predicted = (samples[idx], labels[idx], predicted[idx])
@@ -35,8 +34,8 @@ def plot_predicted_samples(count, samples, labels, predicted, main_title):
     assert rows * cols == count, 'Number of samples must be a multiple of 4'
     fig, axes = plt.subplots(rows, cols, figsize=(16, rows * 4))
     for i, ax in enumerate(axes.flat):
-        plot_sample(ax, samples[i], '#{}, Tumor: {}, Predicted: {}'.format(
-            idx[i], has_tumor(labels[i]), has_tumor(predicted[i])))
+        plot_sample(ax, samples[i], '#{}, Is HGG: {}, Predicted: {}'.format(
+            idx[i], has_tumor(labels[i]), has_tumor(predicted[i])), shape)
     fig.suptitle(main_title)
 
 def plot_samples(count, samples, labels, main_title):
