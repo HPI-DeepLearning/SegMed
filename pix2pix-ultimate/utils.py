@@ -27,7 +27,6 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
     
     h1 = int(np.ceil(np.random.uniform(1e-2, offset)))
     w1 = int(np.ceil(np.random.uniform(1e-2, offset)))
-    ran = np.random.random()
     
     conv = []
     for image in images:
@@ -46,8 +45,7 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
         tmp = scipy.misc.imresize(image, [hypersize, hypersize], interp='nearest')
         image = tmp[h1:h1+image_size, w1:w1+image_size]
         image = image/127.5 - 1.
-        if flip and ran > 0.5:
-            image = np.fliplr(image)
+		
         conv.append(image)
     
     return np.stack(conv, axis=2)
