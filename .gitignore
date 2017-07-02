@@ -1,0 +1,10 @@
+# venv
+Include/
+Lib/
+Scripts/
+tcl/
+
+pip-selfcheck.json
+*.whl
+
+/thomas/output/
