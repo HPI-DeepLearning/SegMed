@@ -16,7 +16,6 @@ from keras.losses import categorical_crossentropy
 from keras.optimizers import SGD, Adadelta, Nadam
 from matplotlib import pyplot as plt
 device_lib.list_local_devices()
-
 WIDTH, HEIGHT = 240, 240
 SOURCE_FILE = os.path.join('..', 'data', 'week3', 'week3_just_tumor_{}.csv')
 SOURCE_FILES = [SOURCE_FILE.format(i) for i in range(25)]
@@ -140,6 +139,6 @@ utils.plot_predicted_samples(4, X_val[is_lgg], y_val[is_lgg], y_val_pred[is_lgg]
 plt.savefig('alexnet_samples_lgg.png')
 utils.plot_predicted_samples(4, X_val[is_lgg == False], y_val[is_lgg == False], y_val_pred[is_lgg == False], 'Validation set - HGG', (WIDTH, HEIGHT))
 plt.savefig('alexnet_samples_hgg.png')
-utils.plot_model(model, 'skull_classification_model_alexnet.png')
+utils.plot_model(model, 'skull_classification_model_alexnet.png', show=False)
 
 

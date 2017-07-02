@@ -1,4 +1,3 @@
-from IPython.display import SVG
 import keras
 from keras.utils.vis_utils import model_to_dot
 from matplotlib import pyplot as plt
@@ -46,4 +45,5 @@ def plot_model(model, filename=None, show=True):
     if filename:
         keras.utils.plot_model(model, show_shapes=True, to_file=filename)
     if show:
+	from IPython.display import SVG
         return SVG(model_to_dot(model, show_shapes=True).create(prog='dot', format='svg'))

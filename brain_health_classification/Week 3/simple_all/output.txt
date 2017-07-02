@@ -1,0 +1,134 @@
+Using TensorFlow backend.
+2017-07-01 09:41:52.035141: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2017-07-01 09:41:52.035177: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+2017-07-01 09:41:52.035188: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+2017-07-01 09:41:52.035198: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+2017-07-01 09:41:52.539970: I tensorflow/core/common_runtime/gpu/gpu_device.cc:940] Found device 0 with properties: 
+name: GeForce GTX TITAN X
+major: 5 minor: 2 memoryClockRate (GHz) 1.076
+pciBusID 0000:01:00.0
+Total memory: 11.92GiB
+Free memory: 11.20GiB
+2017-07-01 09:41:52.809944: W tensorflow/stream_executor/cuda/cuda_driver.cc:523] A non-primary context 0x3dfb900 exists before initializing the StreamExecutor. We haven't verified StreamExecutor works with that.
+2017-07-01 09:41:52.811001: I tensorflow/core/common_runtime/gpu/gpu_device.cc:940] Found device 1 with properties: 
+name: GeForce GTX TITAN X
+major: 5 minor: 2 memoryClockRate (GHz) 1.076
+pciBusID 0000:04:00.0
+Total memory: 11.92GiB
+Free memory: 11.04GiB
+2017-07-01 09:41:52.811485: I tensorflow/core/common_runtime/gpu/gpu_device.cc:961] DMA: 0 1 
+2017-07-01 09:41:52.811497: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] 0:   Y Y 
+2017-07-01 09:41:52.811506: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] 1:   Y Y 
+2017-07-01 09:41:52.811524: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GeForce GTX TITAN X, pci bus id: 0000:01:00.0)
+2017-07-01 09:41:52.811533: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Creating TensorFlow device (/gpu:1) -> (device: 1, name: GeForce GTX TITAN X, pci bus id: 0000:04:00.0)
+Processing chunk file #0
+('from', 0, 'to', 998)
+Processing chunk file #1
+('from', 999, 'to', 1997)
+Processing chunk file #2
+('from', 1998, 'to', 2996)
+Processing chunk file #3
+('from', 2997, 'to', 3995)
+Processing chunk file #4
+('from', 3996, 'to', 4994)
+Processing chunk file #5
+('from', 4995, 'to', 5993)
+Processing chunk file #6
+('from', 5994, 'to', 6992)
+Processing chunk file #7
+('from', 6993, 'to', 7991)
+Processing chunk file #8
+('from', 7992, 'to', 8990)
+Processing chunk file #9
+('from', 8991, 'to', 9989)
+Processing chunk file #10
+('from', 9990, 'to', 10988)
+Processing chunk file #11
+('from', 10989, 'to', 11987)
+Processing chunk file #12
+('from', 11988, 'to', 12986)
+Processing chunk file #13
+('from', 12987, 'to', 13985)
+Processing chunk file #14
+('from', 13986, 'to', 14984)
+Processing chunk file #15
+('from', 14985, 'to', 15983)
+Processing chunk file #16
+('from', 15984, 'to', 16982)
+Processing chunk file #17
+('from', 16983, 'to', 17981)
+Processing chunk file #18
+('from', 17982, 'to', 18980)
+Processing chunk file #19
+('from', 18981, 'to', 19979)
+Processing chunk file #20
+('from', 19980, 'to', 20978)
+Processing chunk file #21
+('from', 20979, 'to', 21977)
+Processing chunk file #22
+('from', 21978, 'to', 22976)
+Processing chunk file #23
+('from', 22977, 'to', 23975)
+Processing chunk file #24
+('from', 23976, 'to', 24974)
+Preprocess data
+Start training
+Train on 17482 samples, validate on 3746 samples
+Epoch 1/20
+2017-07-01 10:12:30.994367: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GeForce GTX TITAN X, pci bus id: 0000:01:00.0)
+2017-07-01 10:12:30.994430: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Creating TensorFlow device (/gpu:1) -> (device: 1, name: GeForce GTX TITAN X, pci bus id: 0000:04:00.0)
+633s - loss: 0.4522 - acc: 0.7700 - val_loss: 0.3542 - val_acc: 0.8382
+Epoch 2/20
+620s - loss: 0.2054 - acc: 0.9099 - val_loss: 0.1523 - val_acc: 0.9378
+Epoch 3/20
+609s - loss: 0.1220 - acc: 0.9488 - val_loss: 0.1120 - val_acc: 0.9487
+Epoch 4/20
+609s - loss: 0.0828 - acc: 0.9659 - val_loss: 0.1046 - val_acc: 0.9581
+Epoch 5/20
+620s - loss: 0.0574 - acc: 0.9766 - val_loss: 0.1053 - val_acc: 0.9597
+Epoch 6/20
+610s - loss: 0.0488 - acc: 0.9816 - val_loss: 0.1018 - val_acc: 0.9624
+Epoch 7/20
+615s - loss: 0.0487 - acc: 0.9828 - val_loss: 0.0973 - val_acc: 0.9626
+Epoch 8/20
+621s - loss: 0.0382 - acc: 0.9865 - val_loss: 0.1106 - val_acc: 0.9634
+Epoch 9/20
+615s - loss: 0.0420 - acc: 0.9851 - val_loss: 0.1092 - val_acc: 0.9610
+Epoch 10/20
+610s - loss: 0.0339 - acc: 0.9881 - val_loss: 0.1098 - val_acc: 0.9664
+Epoch 11/20
+609s - loss: 0.0291 - acc: 0.9902 - val_loss: 0.1153 - val_acc: 0.9658
+Epoch 12/20
+606s - loss: 0.0273 - acc: 0.9910 - val_loss: 0.1143 - val_acc: 0.9674
+Epoch 13/20
+609s - loss: 0.0312 - acc: 0.9898 - val_loss: 0.1137 - val_acc: 0.9645
+Epoch 14/20
+608s - loss: 0.0223 - acc: 0.9920 - val_loss: 0.1257 - val_acc: 0.9672
+Epoch 15/20
+608s - loss: 0.0264 - acc: 0.9914 - val_loss: 0.1141 - val_acc: 0.9722
+Epoch 16/20
+607s - loss: 0.0261 - acc: 0.9920 - val_loss: 0.1372 - val_acc: 0.9626
+Epoch 17/20
+611s - loss: 0.0237 - acc: 0.9924 - val_loss: 0.1283 - val_acc: 0.9669
+Epoch 18/20
+609s - loss: 0.0223 - acc: 0.9926 - val_loss: 0.1348 - val_acc: 0.9645
+Epoch 19/20
+609s - loss: 0.0195 - acc: 0.9942 - val_loss: 0.1516 - val_acc: 0.9613
+Epoch 20/20
+613s - loss: 0.0228 - acc: 0.9930 - val_loss: 0.1255 - val_acc: 0.9666
+
+Validate model on 3747 unknown validation samples:
+('Val loss:', 0.10170091924853231)
+('Val accuracy:', 0.97064318122754323)
+Traceback (most recent call last):
+  File "classify.py", line 142, in <module>
+    utils.plot_model(model, 'skull_classification_model_alexnet.png', show=False)
+  File "/home/segmed_ss17/SegMed/brain_health_classification/Week 3/utils.py", line 46, in plot_model
+    keras.utils.plot_model(model, show_shapes=True, to_file=filename)
+  File "/home/segmed_ss17/SegMed/segmed_gpu/local/lib/python2.7/site-packages/keras/utils/vis_utils.py", line 131, in plot_model
+    dot = model_to_dot(model, show_shapes, show_layer_names, rankdir)
+  File "/home/segmed_ss17/SegMed/segmed_gpu/local/lib/python2.7/site-packages/keras/utils/vis_utils.py", line 52, in model_to_dot
+    _check_pydot()
+  File "/home/segmed_ss17/SegMed/segmed_gpu/local/lib/python2.7/site-packages/keras/utils/vis_utils.py", line 27, in _check_pydot
+    raise ImportError('Failed to import pydot. You must install pydot'
+ImportError: Failed to import pydot. You must install pydot and graphviz for `pydotprint` to work.
