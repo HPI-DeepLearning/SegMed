@@ -138,7 +138,7 @@ def train(pix):
 
         for idx in xrange(0, batch_idxs):
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
-            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for batch_file in batch_files]
+            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_train=True) for batch_file in batch_files]
 
             batch_images = np.array(batch).astype(np.float32)
                 
