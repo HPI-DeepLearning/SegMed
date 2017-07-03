@@ -1,6 +1,23 @@
+import numpy as np
+
 def dice_score(source, target):
-    #TODO
-    return 0
+
+    k=5
+    channels = 1
+    # segmentation
+    source = np.zeros((100,100), dtype='float')
+    #source[30:70, 40:80] = 1
+
+    # ground truth
+    target = np.zeros((100,100), dtype='float')
+    #target[30:70, 40:80] = 1
+
+    sum = 0;
+    for c in range(channels + 1):
+        print(c)
+        sum += np.sum(target[source==c])*2.0 / (np.sum(target) + np.sum(source))	
+	
+    return sum
     
 def hausdorf_distance(source, target):
     #TODO
