@@ -380,13 +380,9 @@ def test(pix):
 
     sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
 
-    # sort testing input
-    n = [int(i) for i in map(lambda x: x.split('/')[-1].split('.png')[0], sample_files)]
-    sample_files = [x for (y, x) in sorted(zip(n, sample_files))]
-
     # load testing input
     print("Loading testing images ...")
-    sample = [load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_test=True) for sample_file in sample_files]
+    sample = [load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for sample_file in sample_files]
 
     sample_images = np.array(sample).astype(np.float32)
     sample_images = [sample_images[i:i+pix.batch_size]
@@ -401,14 +397,22 @@ def test(pix):
         print(" [!] Load failed...")
 
     for i, sample_image in enumerate(sample_images):
-        idx = i+1
-        print("sampling image ", idx)
+        if sample_image.shape[0] != pix.batch_size:
+            print('Incomplete batch.')
+            continue
+            
+        print("sampling image ", i)
         samples = pix.sess.run(
             pix.fake_B_sample,
             feed_dict={pix.real_data: sample_image}
         )
-        save_images(samples, [pix.batch_size, 1],
-                    './{}/test_{:04d}.png'.format(pix.test_dir, idx))
+       
+        arr = np.split(sample_image, sample_image.shape[3], axis=3)
+        arr.append(samples)
+        
+        con = np.concatenate(arr, axis=2)
+        save_images(con, [pix.batch_size, 1],
+                    './{}/test_{:04d}.png'.format(pix.test_dir, i))
 
 # Run The Model
 def run(pix):

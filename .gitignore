@@ -1,3 +1,8 @@
+pix2pix-ultimate/datasets/
+pix2pix-ultimate/sample-x/
+pix2pix-ultimate/test-x/
+pix2pix-ultimate/checkpoint-x/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -99,3 +104,14 @@ ENV/
 .mypy_cache/
 data/
 datasets/
+
+# venv
+Include/
+Lib/
+Scripts/
+tcl/
+
+pip-selfcheck.json
+*.whl
+
+/thomas/output/
