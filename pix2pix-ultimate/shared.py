@@ -261,7 +261,7 @@ def generator(pix, image, y=None):
             [pix.batch_size, s, s, pix.output_c_dim], name='g_d8', with_w=True)
         # d8 is (256 x 256 x output_c_dim)
 
-        return tf.nn.tanh(pix.d8)
+        return tf.sign(tf.nn.tanh(pix.d8))
 
 def sampler(pix, image, y=None):
 
@@ -335,7 +335,7 @@ def sampler(pix, image, y=None):
             [pix.batch_size, s, s, pix.output_c_dim], name='g_d8', with_w=True)
         # d8 is (256 x 256 x output_c_dim)
 
-        return tf.nn.tanh(pix.d8)
+        return tf.sign(tf.nn.tanh(pix.d8))
 
 def save(pix, checkpoint_dir, step):
     model_name = "pix2pix.model"
