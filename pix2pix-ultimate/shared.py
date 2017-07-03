@@ -14,18 +14,9 @@ from utils import *
 
 def init(pix):
     pix.image_size = 256 // pix.speed_factor
-    pix.epoch = 50
-    pix.train_size = 1e8
-    pix.niter = 200
+    pix.epoch = 100
     pix.lr = 0.0002
     pix.beta1 = 0.5
-    pix.flip = True
-    pix.save_epoch_freq = 50
-    pix.save_latest_freq = 5000
-    pix.print_freq = 50
-    pix.continue_train = False
-    pix.serial_batches = False
-    pix.serial_batch_iter = True
     pix.checkpoint_dir = './checkpoint-{}'.format(pix.axis)
     pix.sample_dir = './sample-{}'.format(pix.axis)
     pix.test_dir = './test-{}'.format(pix.axis)
@@ -140,8 +131,7 @@ def train(pix):
 
     for epoch in xrange(pix.epoch):
         data = glob('./datasets/{0}/train/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
-        #np.random.shuffle(data)
-        batch_idxs = min(len(data), pix.train_size) // pix.batch_size
+        batch_idxs = len(data) // pix.batch_size
 
         for idx in xrange(0, batch_idxs):
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
@@ -406,18 +396,10 @@ def test(pix):
             pix.fake_B_sample,
             feed_dict={pix.real_data: sample_image}
         )
-        #print(samples.shape)  
-        #print(sample_image.shape)  		
-        #arr = np.split(sample_image, sample_image.shape[3], axis=3)
-        #yo = [arr.append(sample) for sample in samples]
-        #yo = [print(sample.shape) for sample in samples]
-        #yo = [print(sample.shape) for sample in arr]
 
-		#arr.append(samples)
         combined = np.concatenate((sample_image, samples), axis=3)
         arr = np.split(combined, combined.shape[3], axis=3)
-        #arr.append(samples)
-		
+
         con = np.concatenate(arr, axis=2)
         save_images(con, [pix.batch_size, 1],
                     './{}/test_{:04d}.png'.format(pix.test_dir, i))
