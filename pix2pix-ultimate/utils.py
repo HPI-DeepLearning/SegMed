@@ -23,7 +23,6 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
     h1 = int(np.ceil(np.random.uniform(1e-2, offset)))
     w1 = int(np.ceil(np.random.uniform(1e-2, offset)))
 
-    print(len(images))
     conv = []
     for image in images:
         top = int((fullsize - image.shape[1]) / 2)
@@ -39,7 +38,7 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
         tmp = scipy.misc.imresize(image, [hypersize, hypersize], interp='nearest')
         image = tmp[h1:h1+image_size, w1:w1+image_size]
         image = image/127.5 - 1.
-        print(image.shape)
+		
         conv.append(image)
 
     return np.stack(conv, axis=2)
