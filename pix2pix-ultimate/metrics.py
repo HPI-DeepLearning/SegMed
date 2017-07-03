@@ -34,6 +34,7 @@ def execute_metrics(images, metrics=[example_metric]):
         for j, metric in enumerate(metrics):
             for k, gt_region, pred_region in zip(range(3), gt, predicted):
                 results[i, j, k] = metric(gt_region, pred_region)
+        # TODO: Later plot the image with a table containing the metrics (for presentation)
     return results
 
 if __name__ == '__main__':
