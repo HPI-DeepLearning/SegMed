@@ -406,10 +406,18 @@ def test(pix):
             pix.fake_B_sample,
             feed_dict={pix.real_data: sample_image}
         )
-       
-        arr = np.split(sample_image, sample_image.shape[3], axis=3)
-        arr.append(samples)
-        
+        #print(samples.shape)  
+        #print(sample_image.shape)  		
+        #arr = np.split(sample_image, sample_image.shape[3], axis=3)
+        #yo = [arr.append(sample) for sample in samples]
+        #yo = [print(sample.shape) for sample in samples]
+        #yo = [print(sample.shape) for sample in arr]
+
+		#arr.append(samples)
+        combined = np.concatenate((sample_image, samples), axis=3)
+        arr = np.split(combined, combined.shape[3], axis=3)
+        #arr.append(samples)
+		
         con = np.concatenate(arr, axis=2)
         save_images(con, [pix.batch_size, 1],
                     './{}/test_{:04d}.png'.format(pix.test_dir, i))
@@ -431,5 +439,3 @@ def run(pix):
             train(pix)
         else:
             test(pix)
-
-    tf.app.run()
