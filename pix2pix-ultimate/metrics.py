@@ -14,27 +14,28 @@ def specificity(source, target):
     #TODO
     return 0
 
-"""Return all metric values as array
-1. dice_score
-2. hausdorf_distance
-3. sensitivity
-4. specificity
-"""    
+    
 def compute_metrics(source, target):
+    """Return all metric values as array
+    1. dice_score
+    2. hausdorf_distance
+    3. sensitivity
+    4. specificity"""
 
     return [dice_score(source, target),
         hausdorf_distance(source, target),
         sensitivity(source, target),
         specificity(source, target)]
 
-"""Prints metrics with the correct name
-Values as Array with following order:
-1. dice_score
-2. hausdorf_distance
-3. sensitivity
-4. specificity
-"""                
 def metrics_as_string(metrics):
+    """Prints metrics with the correct name
+    Values as Array with following order:
+    1. dice_score
+    2. hausdorf_distance
+    3. sensitivity
+    4. specificity
+    """                
+
     numerals = 5
     decimal = 3
     print("Metrics: dice score: %{0}.{1}f, hausdorf_distance: %{0}.{1}f, \
