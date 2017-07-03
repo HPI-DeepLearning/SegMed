@@ -400,7 +400,10 @@ def test(pix):
             feed_dict={pix.real_data: sample_image}
         )
 
-        combined = np.concatenate((sample_image, samples), axis=3)
+        if pix.phase == 'test':
+            combined = np.concatenate((sample_image, samples), axis=3)
+        else:
+            combined = samples
         arr = np.split(combined, combined.shape[3], axis=3)
 
         con = np.concatenate(arr, axis=2)
