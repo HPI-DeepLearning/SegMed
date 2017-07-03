@@ -20,6 +20,7 @@ def init(pix):
     pix.checkpoint_dir = './checkpoint-{}'.format(pix.axis)
     pix.sample_dir = './sample-{}'.format(pix.axis)
     pix.test_dir = './test-{}'.format(pix.axis)
+    pix.contest_dir = './contest-{}'.format(pix.axis)
     pix.L1_lambda = 100.0
 
     # Batch normalization : deals with poor initialization helps gradient flow
