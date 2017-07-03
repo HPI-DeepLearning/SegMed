@@ -102,6 +102,9 @@ def sample_model(pix, epoch, idx):
         [pix.fake_B_sample, pix.d_loss, pix.g_loss],
         feed_dict={pix.real_data: sample_images}
     )
+    samples = np.split(samples, pix.output_c_dim, axis=3)
+    samples = np.concatenate(samples, axis=2)
+	
     save_images(samples, [pix.batch_size, 1],
                 './{}/train_{:02d}_{:04d}.png'.format(pix.sample_dir, epoch, idx))
     print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
@@ -261,7 +264,7 @@ def generator(pix, image, y=None):
             [pix.batch_size, s, s, pix.output_c_dim], name='g_d8', with_w=True)
         # d8 is (256 x 256 x output_c_dim)
 
-        return tf.sign(tf.nn.tanh(pix.d8))
+        return tf.nn.tanh(pix.d8)
 
 def sampler(pix, image, y=None):
 
@@ -335,7 +338,7 @@ def sampler(pix, image, y=None):
             [pix.batch_size, s, s, pix.output_c_dim], name='g_d8', with_w=True)
         # d8 is (256 x 256 x output_c_dim)
 
-        return tf.sign(tf.nn.tanh(pix.d8))
+        return tf.nn.tanh(pix.d8)
 
 def save(pix, checkpoint_dir, step):
     model_name = "pix2pix.model"
