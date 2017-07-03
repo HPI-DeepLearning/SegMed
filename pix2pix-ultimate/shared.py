@@ -102,8 +102,8 @@ def sample_model(pix, epoch, idx):
         [pix.fake_B_sample, pix.d_loss, pix.g_loss],
         feed_dict={pix.real_data: sample_images}
     )
-	samples = np.split(samples, axis=3)
-	samples = np.concatenate(samples, axis=2)
+    samples = np.split(samples, axis=3)
+    samples = np.concatenate(samples, axis=2)
 	
     save_images(samples, [pix.batch_size, 1],
                 './{}/train_{:02d}_{:04d}.png'.format(pix.sample_dir, epoch, idx))
