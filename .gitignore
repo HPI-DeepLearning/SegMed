@@ -115,3 +115,5 @@ pip-selfcheck.json
 *.whl
 
 /thomas/output/
+segmed/ #virtual environment
+.idea/ # pycharm stuff
