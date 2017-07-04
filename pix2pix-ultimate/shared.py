@@ -22,6 +22,7 @@ def init(pix):
     pix.checkpoint_dir = './checkpoint-{}'.format(pix.axis)
     pix.sample_dir = './sample-{}'.format(pix.axis)
     pix.test_dir = './test-{}'.format(pix.axis)
+    pix.contest_dir = './contest-{}'.format(pix.axis)
     pix.L1_lambda = 100.0
 
     # Batch normalization : deals with poor initialization helps gradient flow
@@ -140,7 +141,7 @@ def train(pix):
 
         for idx in xrange(0, batch_idxs):
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
-            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for batch_file in batch_files]
+            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_train=True) for batch_file in batch_files]
 
             batch_images = np.array(batch).astype(np.float32)
                 
@@ -404,7 +405,10 @@ def test(pix):
             feed_dict={pix.real_data: sample_image}
         )
 
-        combined = np.concatenate((sample_image, samples), axis=3)
+        if pix.phase == 'test':
+            combined = np.concatenate((sample_image, samples), axis=3)
+        else:
+            combined = samples
         arr = np.split(combined, combined.shape[3], axis=3)
 
         con = np.concatenate(arr, axis=2)

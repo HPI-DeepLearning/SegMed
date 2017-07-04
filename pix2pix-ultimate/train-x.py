@@ -9,6 +9,7 @@ class pix():
     batch_size = 16
     gf_dim = 64
     df_dim = 64
+	# phase is train, test or contest
     phase = 'test'
     
 var = pix()
