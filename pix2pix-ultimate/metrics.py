@@ -7,6 +7,53 @@ from scipy.ndimage.morphology import distance_transform_edt, binary_erosion,\
 from utils import *
 
 
+predefined_threshold = 1.0
+
+
+def true_positive(gt_image, predicted_image, threshold):
+    """ Returns the amount of pixel which are positive in both images.
+
+    :param gt_image: ground truth image
+    :param predicted_image: predicted image
+    :param threshold: threshold to make binary decision
+    :return: amount of pixel which are positive in both images
+    """
+    return np.count_nonzero(gt_image[predicted_image >= threshold])
+
+
+def true_negative(gt_image, predicted_image, threshold):
+    """ Returns the amount of pixel which are negative in both images.
+
+    :param gt_image: ground truth image
+    :param predicted_image: predicted image
+    :param threshold: threshold to make binary decision
+    :return: amount of pixel which are negative in both images
+    """
+    return np.count_nonzero((gt_image < threshold)[(predicted_image < threshold)])
+
+
+def false_positive(predicted_image, true_positive, threshold):
+    """ Returns the amount of pixel which are negative in the ground truth but positive in predicted image.
+
+    :param predicted_image: predicted image
+    :param true_positive: amount of correct positive pixels
+    :param threshold: threshold to make binary decision
+    :return: amount of pixel which are negative in the ground truth but positive in prediction image
+    """
+    return abs(np.count_nonzero(predicted_image >= threshold) - true_positive)
+
+
+def false_negative(gt_image, threshold, true_positive):
+    """ Returns the amount of pixel which are positive in the ground truth but negative in predicted image.
+
+    :param gt_image: ground truth image
+    :param true_positive: amount of correct positive pixels
+    :param threshold: threshold to make binary decision
+    :return: amount of pixel which are positive in the ground truth but negative in predicted image
+    """
+    return abs(np.count_nonzero(gt_image > threshold) - true_positive) #FN
+
+
 def example_metric(gt_image, predicted_image):
     """ Computes an example metric.
 
@@ -17,26 +64,27 @@ def example_metric(gt_image, predicted_image):
     return np.abs(gt_image.sum() - predicted_image.sum()), "example"
 
 
-def dice_score(gt_image, predicted_image, threshold_value=128.0):
+def dice_score(gt_image, predicted_image, threshold=predefined_threshold):
     """ Computes the dice score for two binary images.
+        TP*2 /(TP*2 + FP + FN)
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :param threshold_value: float - threshold where to seperate the 2 values
+    :param threshold: float - threshold where to seperate the 2 values
     :return: tuple(float, string) - dice score, name of the metric
     """
-    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
-    false_positive = abs(np.count_nonzero(predicted_image) - true_positive)
-    false_negative = abs(np.count_nonzero(gt_image) - true_positive)
+    tp = true_positive(gt_image,predicted_image,threshold)
+    fp = false_positive(predicted_image, tp, threshold)
+    fn = false_negative(gt_image, threshold, tp)
 
     # print("--------------------------------------------")
-    # print("true positive %5.0f" % true_positive)
-    # print("false positive %5.0f" % false_positive)
-    # print("false negative %5.0f" % false_negative)
+    # print("true positive %5.0f" % tp)
+    # print("false positive %5.0f" % fp)
+    # print("false negative %5.0f" % fn)
 
-    true_positive += 1 # add 1 to avoid division by zero
+    tp += 1 # add 1 to avoid division by zero
 
-    return true_positive * 2.0 / (true_positive * 2.0 + false_negative + false_positive), \
+    return tp * 2.0 / (tp * 2.0 + fn + fp), \
            "dice score"
 
 
@@ -78,45 +126,49 @@ def hausdorff_distance(gt_image, predicted_image):
     return max(hd1, hd2), "hausdorff distance"
 
 
-def sensitivity(gt_image, predicted_image, threshold_value=128.0):
+def sensitivity(gt_image, predicted_image, threshold=predefined_threshold):
     """ Computes the sensitivity score for two binary images. Measures the overlap.
+        TP / (TP + FN)
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :param threshold_value: float - threshold for color value
+    :param threshold: float - threshold for color value
     :return: tuple(float, string) - dice score, name of the metric
     """
-    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
-    false_negative = abs(np.count_nonzero(gt_image) - true_positive)
+    tp = true_positive(gt_image, predicted_image, threshold)
+    fn = false_negative(gt_image, threshold, tp)
 
     # print("--------------------------------------------")
-    # print("true positive %5.0f" % true_positive)
-    # print("false negative %5.0f" % false_negative)
+    # print("true positive %5.0f" % tp)
+    # print("false negative %5.0f" % fn)
 
-    true_positive += 1 # add 1 to avoid division by zero
+    tp += 1 # add 1 to avoid division by zero
 
-    return true_positive * 2.0 / (true_positive * 2.0 + false_negative), \
+    return tp * 2.0 / (tp * 2.0 + fn), \
            "sensitivity"
 
 
-def specificity(gt_image, predicted_image, threshold_value=128.0):
+def specificity(gt_image, predicted_image, threshold=predefined_threshold):
     """ Computes the sensitivity score for two binary images. Its the counter part to sensitivity.
+        TN / (TN + FP)
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :param threshold_value: float - threshold for color value
+    :param threshold: float - threshold for color value
     :return: tuple(float, string) - dice score, name of the metric
     """
-    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
-    false_positive = abs(np.count_nonzero(predicted_image) - true_positive)
+    tn = true_positive(gt_image, predicted_image, threshold)
+    tp = true_positive(gt_image, predicted_image, threshold)
+    fp = false_positive(gt_image, tp, threshold)
 
     # print("--------------------------------------------")
-    # print("true positive %5.0f" % true_positive)
-    # print("false positive %5.0f" % false_positive)
+    # print("true negative %5.0f" % tn)
+    # print("true positive %5.0f" % tp)
+    # print("false positive %5.0f" % fp)
 
-    true_positive += 1 # add 1 to avoid division by zero
+    tn += 1 # add 1 to avoid division by zero
 
-    return true_positive * 2.0 / (true_positive * 2.0 + false_positive), \
+    return tn / (tn + fp), \
            "specificity"
 
 
