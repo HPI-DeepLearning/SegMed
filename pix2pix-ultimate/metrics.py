@@ -83,38 +83,6 @@ def specificity(gt_image, predicted_image, threshold_value=128.0):
     return true_positive * 2.0 / (true_positive * 2.0 + false_positive), \
            "specificity"
 
-    
-def compute_metrics(gt_image, predicted_image):
-    """ Return all metric values as array
-    1. dice_score
-    2. hausdorf_distance
-    3. sensitivity
-    4. specificity"""
-
-    return [dice_score(gt_image, predicted_image),
-        hausdorf_distance(gt_image, predicted_image),
-        sensitivity(gt_image, predicted_image),
-        specificity(gt_image, predicted_image)]
-
-
-def metrics_as_string(metrics):
-    """ Prints metrics with the correct name
-    Values as Array with following order:
-    1. dice_score
-    2. hausdorf_distance
-    3. sensitivity
-    4. specificity
-
-    :param metrics: computed metric values as array
-    :return: -
-    """
-
-    numerals = 5
-    decimal = 3
-    print("Metrics: dice score: %{0}.{1}f, hausdorf_distance: %{0}.{1}f, \
-sensitivity: %{0}.{1}f, specificity: %{0}.{1}f".format(numerals, decimal) \
-        % (metrics[0], metrics[1], metrics[2], metrics[3]))
-
 
 def get_img_row(overall_img, img_size, row, channels=10):
     """ Return all images of one slice of a brain.
