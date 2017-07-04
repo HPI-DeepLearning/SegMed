@@ -14,7 +14,7 @@ def example_metric(source, target):
     return np.abs(source.sum() - target.sum())
 
 
-def dice_score(source, target, channel_value=1):
+def dice_score(source, target, channel_value=0):
     """ Computes the dice score for two images for a given value
 
     :param source: array - Ground truth of one tumor segment
@@ -104,28 +104,31 @@ def prepare_images(file, batch_size=16, channels=10):
     return output
 
 
-def execute_metrics(images, metrics=[example_metric]):
+def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0, target_offset=7):
     """ Execution functions to apply multiple metric functions on images.
 
     :param images: array - row of images to apply metric functions on
     :param metrics: array - metric functions to apply
+    :param channels: integer - amount of channels to compare
+    :param source_offset - offset in the image row for the source images
+    :param target_offset - offset in the image row for the target images
     :return: array - all computed metric values
     """
     # For each image, metric and tumor region
-    results = np.empty((images.shape[0], len(metrics), 3))
+    results = np.empty((images.shape[0], len(metrics), channels))
     for i, row in enumerate(images):
-        gt = row[:3]
-        predicted = row[7:]
+        gt = row[source_offset:channels]
+        predicted = row[target_offset:channels]
         for j, metric in enumerate(metrics):
-            for k, gt_region, pred_region in zip(range(3), gt, predicted):
-                results[i, j, k] = metric(gt_region, pred_region)
+            for k, source_image, target_image in zip(range(channels), gt, predicted):
+                results[i, j, k] = metric(source_image, target_image)
         # TODO: Later plot the image with a table containing the metrics (for presentation)
     return results
 
 
 if __name__ == '__main__':
     images = prepare_images(file='test-x/test_0118.png')
-    metrics = execute_metrics(images)
+    metrics = execute_metrics(images, [dice_score])
     # slices(rows) x metrics x 3(tumor regions)
     print(metrics)
 
