@@ -9,9 +9,9 @@ def example_metric(gt_image, predicted_image):
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :return: float - example metric value
+    :return: tuple(float, string) - example metric value, name of the metric
     """
-    return np.abs(gt_image.sum() - predicted_image.sum())
+    return np.abs(gt_image.sum() - predicted_image.sum()), "example"
 
 
 def dice_score(gt_image, predicted_image, channel_value=0):
@@ -20,9 +20,10 @@ def dice_score(gt_image, predicted_image, channel_value=0):
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
     :param channel_value: float - value to compute the dice score for
-    :return: float - dice score
+    :return: tuple(float, string) - dice score, name of the metric
     """
-    return np.sum(predicted_image[gt_image == channel_value])*2.0 / (np.sum(predicted_image) + np.sum(gt_image))
+    return np.sum(predicted_image[gt_image == channel_value])*2.0 / (np.sum(predicted_image) + np.sum(gt_image)), \
+           "dice score"
 
 
 def hausdorf_distance(gt_image, predicted_image):
@@ -112,23 +113,24 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
     :param channels: integer - amount of channels to compare
     :param source_offset - offset in the image row for the ground truth images
     :param predicted_offset - offset in the image row for the target images
-    :return: array - all computed metric values
+    :return: tuple(array, array) - computed metric values (slices(rows), metrics, tumor regions), name of the metric
     """
     # For each image, metric and tumor region
     results = np.empty((images.shape[0], len(metrics), channels))
+    metric_names = {}
     for i, row in enumerate(images):
         gt = row[source_offset:channels]
         predicted = row[predicted_offset:predicted_offset + channels]
         for j, metric in enumerate(metrics):
             for k, gt_image, predicted_image in zip(range(3), gt, predicted):
-                results[i, j, k] = metric(gt_image, predicted_image)
+                results[i, j, k], metric_names[j] = metric(gt_image, predicted_image)
         # TODO: Later plot the image with a table containing the metrics (for presentation)
-    return results
+    return results, metric_names
 
 
 if __name__ == '__main__':
     images = prepare_images(file='test-x/test_0118.png')
-    metrics = execute_metrics(images, [dice_score])
+    metrics = execute_metrics(images, [dice_score, example_metric])
     # slices(rows) x metrics x 3(tumor regions)
     print(metrics)
 
