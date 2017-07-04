@@ -1,42 +1,47 @@
-import os
 import numpy as np
-from glob import glob
+import scipy.misc
+
 from utils import *
 
-def dice_score(source, target):
 
-    k=5
-    channels = 1
-    # segmentation
-    source = np.zeros((100,100), dtype='float')
-    #source[30:70, 40:80] = 1
+def example_metric(source, target):
+    """ Computes an example metric
 
-    # ground truth
-    target = np.zeros((100,100), dtype='float')
-    #target[30:70, 40:80] = 1
+    :param source: array - Ground truth of one tumor segment
+    :param target: array - Predicted ground truth of one tumor segment
+    :return: float - example metric value
+    """
+    return np.abs(source.sum() - target.sum())
 
-    sum = 0;
-    for c in range(channels + 1):
-        print(c)
-        sum += np.sum(target[source==c])*2.0 / (np.sum(target) + np.sum(source))	
-	
-    return sum
-    
+
+def dice_score(source, target, channel_value=1):
+    """ Computes the dice score for two images for a given value
+
+    :param source: array - Ground truth of one tumor segment
+    :param target: array - Predicted ground truth of one tumor segment
+    :param channel_value: float - value to compute the dice score for
+    :return: float - dice score
+    """
+    return np.sum(target[source == channel_value])*2.0 / (np.sum(target) + np.sum(source))
+
+
 def hausdorf_distance(source, target):
     #TODO
     return 0
-    
+
+
 def sensitivity(source, target):
     #TODO
     return 0
-    
+
+
 def specificity(source, target):
     #TODO
     return 0
 
     
 def compute_metrics(source, target):
-    """Return all metric values as array
+    """ Return all metric values as array
     1. dice_score
     2. hausdorf_distance
     3. sensitivity
@@ -47,14 +52,18 @@ def compute_metrics(source, target):
         sensitivity(source, target),
         specificity(source, target)]
 
+
 def metrics_as_string(metrics):
-    """Prints metrics with the correct name
+    """ Prints metrics with the correct name
     Values as Array with following order:
     1. dice_score
     2. hausdorf_distance
     3. sensitivity
     4. specificity
-    """                
+
+    :param metrics: computed metric values as array
+    :return: -
+    """
 
     numerals = 5
     decimal = 3
@@ -63,31 +72,45 @@ sensitivity: %{0}.{1}f, specificity: %{0}.{1}f".format(numerals, decimal) \
         % (metrics[0], metrics[1], metrics[2], metrics[3]))
 
 
+def get_img_row(overall_img, img_size, row, channels=10):
+    """ Return all images of one slice of a brain.
 
-
-# Return all images of one slice of a brain (seperated)
-def get_img_row(overall_img, img_size, i):
-    from_ = i * img_size
+    :param overall_img: array - the entire image
+    :param img_size: integer - size of the image
+    :param row: integer - row index
+    :param channels: integer - images/channels for each row
+    :return: array - all images of one slice of a brain
+    """
+    from_ = row * img_size
     to = from_ + img_size
     img_row = overall_img[from_:to]
-    return np.array(np.split(img_row, 10, axis=1))
+    return np.array(np.split(img_row, channels, axis=1))
 
-# Output array has the shape [batch_size, dimensions, width, height]
-def prepare_images(file, batch_size = 16):
-    channels = 10  # 10 dimensions for each slice of a brain
+
+def prepare_images(file, batch_size=16, channels=10):
+    """ Transforms the input file to an array with the shape [batch_size, dimensions, width, height].
+
+    :param file: string - path to the file
+    :param batch_size: integer - size/rows of a batch
+    :param channels: integer - images/channels for each row/brain
+    :return: array - prepared images with the shape [batch_size, dimensions, width, height]
+    """
     input_img = np.array(scipy.misc.imread(file, flatten=True))  # (2048, 1280)
     img_size = int(input_img.shape[1] / channels)
     slices = int(input_img.shape[0] / img_size)
     output = np.empty((slices, channels, img_size, img_size))
-    for i in range(16):
+    for i in range(batch_size):
         output[i] = get_img_row(input_img, img_size, i)
     return output
 
-def example_metric(source, target):
-    # Image of one tumor region
-    return np.abs(source.sum() - target.sum())
 
 def execute_metrics(images, metrics=[example_metric]):
+    """ Execution functions to apply multiple metric functions on images.
+
+    :param images: array - row of images to apply metric functions on
+    :param metrics: array - metric functions to apply
+    :return: array - all computed metric values
+    """
     # For each image, metric and tumor region
     results = np.empty((images.shape[0], len(metrics), 3))
     for i, row in enumerate(images):
@@ -98,6 +121,7 @@ def execute_metrics(images, metrics=[example_metric]):
                 results[i, j, k] = metric(gt_region, pred_region)
         # TODO: Later plot the image with a table containing the metrics (for presentation)
     return results
+
 
 if __name__ == '__main__':
     images = prepare_images(file='test-x/test_0118.png')
