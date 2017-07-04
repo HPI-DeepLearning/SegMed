@@ -4,53 +4,53 @@ import scipy.misc
 from utils import *
 
 
-def example_metric(source, target):
+def example_metric(gt_image, predicted_image):
     """ Computes an example metric
 
-    :param source: array - Ground truth of one tumor segment
-    :param target: array - Predicted ground truth of one tumor segment
+    :param gt_image: array - Ground truth of one tumor segment
+    :param predicted_image: array - Predicted ground truth of one tumor segment
     :return: float - example metric value
     """
-    return np.abs(source.sum() - target.sum())
+    return np.abs(gt_image.sum() - predicted_image.sum())
 
 
-def dice_score(source, target, channel_value=0):
+def dice_score(gt_image, predicted_image, channel_value=0):
     """ Computes the dice score for two images for a given value
 
-    :param source: array - Ground truth of one tumor segment
-    :param target: array - Predicted ground truth of one tumor segment
+    :param gt_image: array - Ground truth of one tumor segment
+    :param predicted_image: array - Predicted ground truth of one tumor segment
     :param channel_value: float - value to compute the dice score for
     :return: float - dice score
     """
-    return np.sum(target[source == channel_value])*2.0 / (np.sum(target) + np.sum(source))
+    return np.sum(predicted_image[gt_image == channel_value])*2.0 / (np.sum(predicted_image) + np.sum(gt_image))
 
 
-def hausdorf_distance(source, target):
+def hausdorf_distance(gt_image, predicted_image):
     #TODO
     return 0
 
 
-def sensitivity(source, target):
+def sensitivity(gt_image, predicted_image):
     #TODO
     return 0
 
 
-def specificity(source, target):
+def specificity(gt_image, predicted_image):
     #TODO
     return 0
 
     
-def compute_metrics(source, target):
+def compute_metrics(gt_image, predicted_image):
     """ Return all metric values as array
     1. dice_score
     2. hausdorf_distance
     3. sensitivity
     4. specificity"""
 
-    return [dice_score(source, target),
-        hausdorf_distance(source, target),
-        sensitivity(source, target),
-        specificity(source, target)]
+    return [dice_score(gt_image, predicted_image),
+        hausdorf_distance(gt_image, predicted_image),
+        sensitivity(gt_image, predicted_image),
+        specificity(gt_image, predicted_image)]
 
 
 def metrics_as_string(metrics):
@@ -104,13 +104,13 @@ def prepare_images(file, batch_size=16, channels=10):
     return output
 
 
-def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0, target_offset=7):
+def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0, predicted_offset=7):
     """ Execution functions to apply multiple metric functions on images.
 
     :param images: array - row of images to apply metric functions on
     :param metrics: array - metric functions to apply
     :param channels: integer - amount of channels to compare
-    :param source_offset - offset in the image row for the source images
+    :param source_offset - offset in the image row for the ground truth images
     :param target_offset - offset in the image row for the target images
     :return: array - all computed metric values
     """
@@ -118,10 +118,10 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
     results = np.empty((images.shape[0], len(metrics), channels))
     for i, row in enumerate(images):
         gt = row[source_offset:channels]
-        predicted = row[target_offset:target_offset + channels]
+        predicted = row[predicted_offset:predicted_offset + channels]
         for j, metric in enumerate(metrics):
-            for k, source_image, target_image in zip(range(3), gt, predicted):
-                results[i, j, k] = metric(source_image, target_image)
+            for k, gt_image, predicted_image in zip(range(3), gt, predicted):
+                results[i, j, k] = metric(gt_image, predicted_image)
         # TODO: Later plot the image with a table containing the metrics (for presentation)
     return results
 
