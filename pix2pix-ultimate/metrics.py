@@ -5,7 +5,7 @@ from utils import *
 
 
 def example_metric(gt_image, predicted_image):
-    """ Computes an example metric
+    """ Computes an example metric.
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
@@ -15,11 +15,11 @@ def example_metric(gt_image, predicted_image):
 
 
 def dice_score(gt_image, predicted_image, threshold_value=128.0):
-    """ Computes the dice score for two images for a given value
+    """ Computes the dice score for two binary images.
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :param threshold_value: float - threshold for color value
+    :param threshold_value: float - threshold where to seperate the 2 values
     :return: tuple(float, string) - dice score, name of the metric
     """
     true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
@@ -42,14 +42,46 @@ def hausdorf_distance(gt_image, predicted_image):
     return 0
 
 
-def sensitivity(gt_image, predicted_image):
-    #TODO
-    return 0
+def sensitivity(gt_image, predicted_image, threshold_value=128.0):
+    """ Computes the sensitivity score for two binary images. Measures the overlap.
+
+    :param gt_image: array - Ground truth of one tumor segment
+    :param predicted_image: array - Predicted ground truth of one tumor segment
+    :param threshold_value: float - threshold for color value
+    :return: tuple(float, string) - dice score, name of the metric
+    """
+    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
+    false_negative = abs(np.count_nonzero(gt_image) - true_positive)
+
+    # print("--------------------------------------------")
+    # print("true positive %5.0f" % true_positive)
+    # print("false negative %5.0f" % false_negative)
+
+    true_positive += 1 # add 1 to avoid division by zero
+
+    return true_positive * 2.0 / (true_positive * 2.0 + false_negative), \
+           "sensitivity"
 
 
-def specificity(gt_image, predicted_image):
-    #TODO
-    return 0
+def specificity(gt_image, predicted_image, threshold_value=128.0):
+    """ Computes the sensitivity score for two binary images. Its the counter part to sensitivity.
+
+    :param gt_image: array - Ground truth of one tumor segment
+    :param predicted_image: array - Predicted ground truth of one tumor segment
+    :param threshold_value: float - threshold for color value
+    :return: tuple(float, string) - dice score, name of the metric
+    """
+    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
+    false_positive = abs(np.count_nonzero(predicted_image) - true_positive)
+
+    # print("--------------------------------------------")
+    # print("true positive %5.0f" % true_positive)
+    # print("false positive %5.0f" % false_positive)
+
+    true_positive += 1 # add 1 to avoid division by zero
+
+    return true_positive * 2.0 / (true_positive * 2.0 + false_positive), \
+           "specificity"
 
     
 def compute_metrics(gt_image, predicted_image):
@@ -141,7 +173,7 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
 
 if __name__ == '__main__':
     images = prepare_images(file='test-x/test_0118.png')
-    metrics = execute_metrics(images, [dice_score])
+    metrics = execute_metrics(images, [dice_score, specificity, sensitivity])
     # slices(rows) x metrics x 3(tumor regions)
     print(metrics)
 
