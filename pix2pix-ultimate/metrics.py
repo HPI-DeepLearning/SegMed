@@ -118,9 +118,9 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
     results = np.empty((images.shape[0], len(metrics), channels))
     for i, row in enumerate(images):
         gt = row[source_offset:channels]
-        predicted = row[target_offset:channels]
+        predicted = row[target_offset:target_offset + channels]
         for j, metric in enumerate(metrics):
-            for k, source_image, target_image in zip(range(channels), gt, predicted):
+            for k, source_image, target_image in zip(range(3), gt, predicted):
                 results[i, j, k] = metric(source_image, target_image)
         # TODO: Later plot the image with a table containing the metrics (for presentation)
     return results
