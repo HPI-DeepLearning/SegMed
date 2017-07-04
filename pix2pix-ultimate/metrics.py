@@ -111,7 +111,7 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
     :param metrics: array - metric functions to apply
     :param channels: integer - amount of channels to compare
     :param source_offset - offset in the image row for the ground truth images
-    :param target_offset - offset in the image row for the target images
+    :param predicted_offset - offset in the image row for the target images
     :return: array - all computed metric values
     """
     # For each image, metric and tumor region
