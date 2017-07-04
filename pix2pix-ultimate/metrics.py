@@ -14,15 +14,26 @@ def example_metric(gt_image, predicted_image):
     return np.abs(gt_image.sum() - predicted_image.sum()), "example"
 
 
-def dice_score(gt_image, predicted_image, channel_value=0):
+def dice_score(gt_image, predicted_image, threshold_value=128.0):
     """ Computes the dice score for two images for a given value
 
     :param gt_image: array - Ground truth of one tumor segment
     :param predicted_image: array - Predicted ground truth of one tumor segment
-    :param channel_value: float - value to compute the dice score for
+    :param threshold_value: float - threshold for color value
     :return: tuple(float, string) - dice score, name of the metric
     """
-    return np.sum(predicted_image[gt_image == channel_value])*2.0 / (np.sum(predicted_image) + np.sum(gt_image)), \
+    true_positive = np.count_nonzero(gt_image[predicted_image >= threshold_value])
+    false_positive = abs(np.count_nonzero(predicted_image) - true_positive)
+    false_negative = abs(np.count_nonzero(gt_image) - true_positive)
+
+    # print("--------------------------------------------")
+    # print("true positive %5.0f" % true_positive)
+    # print("false positive %5.0f" % false_positive)
+    # print("false negative %5.0f" % false_negative)
+
+    true_positive += 1 # add 1 to avoid division by zero
+
+    return true_positive * 2.0 / (true_positive * 2.0 + false_negative + false_positive), \
            "dice score"
 
 
@@ -130,7 +141,7 @@ def execute_metrics(images, metrics=[example_metric],channels=3 ,source_offset=0
 
 if __name__ == '__main__':
     images = prepare_images(file='test-x/test_0118.png')
-    metrics = execute_metrics(images, [dice_score, example_metric])
+    metrics = execute_metrics(images, [dice_score])
     # slices(rows) x metrics x 3(tumor regions)
     print(metrics)
 
