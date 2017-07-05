@@ -7,7 +7,6 @@ import tensorflow as tf
 from glob import glob
 from metrics import *
 from ops import *
-from shared import *
 from six.moves import xrange
 from utils import *
 
