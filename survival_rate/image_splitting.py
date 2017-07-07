@@ -9,7 +9,7 @@ def long_slice(image_path, out_name, outdir, slice_size):
     width, height = img.size
     upper = 0
     left = 0
-    slices = height/slice_size
+    slices = height//slice_size
 
     count = 1
     for slice in range(slices):
