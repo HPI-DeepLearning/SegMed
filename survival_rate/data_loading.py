@@ -12,7 +12,7 @@ def load_tumors(file_path):
     IMAGES_WIDTH = int(img.width / IMAGES_COUNT)
     IMAGES_HEIGHT = img.height
 
-    tumors = np.ones((IMAGES_WIDTH, IMAGES_HEIGHT, TUMOR_IMAGES_COUNT))
+    tumors = np.empty((IMAGES_WIDTH, IMAGES_HEIGHT, TUMOR_IMAGES_COUNT))
     img_array = np.asarray(img, dtype=np.uint8)
     for i in range(TUMOR_IMAGES_COUNT):
         tumor = img_array[:IMAGES_HEIGHT, i * IMAGES_WIDTH:(i + 1) * IMAGES_WIDTH, 0]
