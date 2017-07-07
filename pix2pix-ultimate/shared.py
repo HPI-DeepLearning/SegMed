@@ -401,6 +401,8 @@ def test(pix):
             feed_dict={pix.real_data: sample_image}
         )
 
+        samples = np.sign(samples)
+        
         if pix.phase == 'test':
             combined = np.concatenate((sample_image, samples), axis=3)
         else:
