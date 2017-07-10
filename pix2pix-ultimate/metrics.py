@@ -43,7 +43,7 @@ def false_positive(predicted_image, true_positive, threshold):
     return abs(np.count_nonzero(predicted_image >= threshold) - true_positive)
 
 
-def false_negative(gt_image, threshold, true_positive):
+def false_negative(gt_image, true_positive, threshold):
     """ Returns the amount of pixel which are positive in the ground truth but negative in predicted image.
 
     :param gt_image: ground truth image
@@ -75,7 +75,7 @@ def dice_score(gt_image, predicted_image, threshold=predefined_threshold):
     """
     tp = true_positive(gt_image,predicted_image,threshold)
     fp = false_positive(predicted_image, tp, threshold)
-    fn = false_negative(gt_image, threshold, tp)
+    fn = false_negative(gt_image, tp, threshold)
 
     # print("--------------------------------------------")
     # print("true positive %5.0f" % tp)
@@ -136,7 +136,7 @@ def sensitivity(gt_image, predicted_image, threshold=predefined_threshold):
     :return: tuple(float, string) - dice score, name of the metric
     """
     tp = true_positive(gt_image, predicted_image, threshold)
-    fn = false_negative(gt_image, threshold, tp)
+    fn = false_negative(gt_image, tp, threshold)
 
     # print("--------------------------------------------")
     # print("true positive %5.0f" % tp)
