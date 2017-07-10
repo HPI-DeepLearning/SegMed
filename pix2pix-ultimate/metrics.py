@@ -27,24 +27,30 @@ def true_negative(gt_image, predicted_image):
     return np.count_nonzero(gt_image[predicted_image == 1.0])
 
 
-def false_positive(predicted_image, true_positive):
+def false_positive(gt_image, predicted_image, tp=float("inf")):
     """ Returns the amount of pixel which are zero in the ground truth but one in binary predicted image.
 
+    :param gt_image: binary ground truth image, only used if tp is not supplied
     :param predicted_image: binary predicted image
-    :param true_positive: amount of correct positive pixels
+    :param tp: precomputed true positive value
     :return: amount of pixel which are zero in the ground truth but one in prediction image
     """
-    return abs(np.count_nonzero(predicted_image) - true_positive)
+    if tp == float("inf"):
+        tp = true_positive(gt_image, predicted_image)
+    return abs(np.count_nonzero(predicted_image) - tp)
 
 
-def false_negative(gt_image, true_positive):
-    """ Returns the amount of pixel which are zero in the ground truth but one in binary predicted image.
+def false_negative(gt_image, predicted_image, tp=float("inf")):
+    """ Returns the amount of pixel which are one in the ground truth but zero in binary predicted image.
 
     :param gt_image: binary ground truth image
-    :param true_positive: amount of correct positive pixels
+    :param predicted_image: binary predicted image, only used if tp is not supplied
+    :param tp: precomputed true positive value
     :return: amount of pixel which are one in the ground truth but zero in binary predicted image
     """
-    return abs(np.count_nonzero(gt_image) - true_positive)
+    if tp == float("inf"):
+        tp = true_positive(gt_image, predicted_image)
+    return abs(np.count_nonzero(gt_image) - tp)
 
 
 def example_metric(gt_image, predicted_image):
@@ -65,9 +71,9 @@ def dice_score(gt_image, predicted_image):
     :param predicted_image: array - Predicted ground truth of one tumor segment
     :return: tuple(float, string) - dice score, name of the metric
     """
-    tp = true_positive(gt_image,predicted_image)
-    fp = false_positive(predicted_image, tp)
-    fn = false_negative(gt_image, tp)
+    tp = true_positive(gt_image, predicted_image)
+    fp = false_positive(gt_image, predicted_image, tp)
+    fn = false_negative(gt_image, predicted_image, tp)
 
     # print("--------------------------------------------")
     # print("true positive %5.0f" % tp)
@@ -126,7 +132,7 @@ def sensitivity(gt_image, predicted_image):
     :return: tuple(float, string) - dice score, name of the metric
     """
     tp = true_positive(gt_image, predicted_image)
-    fn = false_negative(gt_image, tp)
+    fn = false_negative(gt_image, predicted_image, tp)
 
     # print("--------------------------------------------")
     # print("true positive %5.0f" % tp)
@@ -147,7 +153,7 @@ def specificity(gt_image, predicted_image):
     """
     tn = true_positive(gt_image, predicted_image)
     tp = true_positive(gt_image, predicted_image)
-    fp = false_positive(gt_image, tp)
+    fp = false_positive(gt_image, predicted_image, tp)
 
     # print("--------------------------------------------")
     # print("true negative %5.0f" % tn)
