@@ -121,8 +121,8 @@ def hausdorff_distance(gt_image, predicted_image):
         object(s) in ```input2```. The distance unit is the same as for the spacing of
         elements along each dimension, which is usually given in mm.
     """
-    hd1 = __surface_distances(gt_image, predicted_image, None, 1).max()
-    hd2 = __surface_distances(predicted_image, gt_image, None, 1).max()
+    hd1 = surface_distances(gt_image, predicted_image, None, 1).max()
+    hd2 = surface_distances(predicted_image, gt_image, None, 1).max()
     return max(hd1, hd2), "hausdorff distance"
 
 
@@ -227,7 +227,7 @@ def execute_metrics(images, metrics=[example_metric], channels=3, gt_offset=0, p
     return results, metric_names
 
 
-def __surface_distances(input1, input2, voxelspacing=None, connectivity=1.0):
+def surface_distances(input1, input2, voxelspacing=None, connectivity=1.0):
     """
     http://pythonhosted.org/MedPy/_modules/medpy/metric/binary.html
     The distances between the surface voxel of binary objects in input1 and their
