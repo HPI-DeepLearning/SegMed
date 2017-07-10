@@ -51,7 +51,7 @@ def false_negative(gt_image, true_positive, threshold):
     :param threshold: threshold to make binary decision
     :return: amount of pixel which are positive in the ground truth but negative in predicted image
     """
-    return abs(np.count_nonzero(gt_image > threshold) - true_positive) #FN
+    return abs(np.count_nonzero(gt_image > threshold) - true_positive)
 
 
 def example_metric(gt_image, predicted_image):
@@ -84,8 +84,7 @@ def dice_score(gt_image, predicted_image, threshold=predefined_threshold):
 
     tp += 1 # add 1 to avoid division by zero
 
-    return tp * 2.0 / (tp * 2.0 + fn + fp), \
-           "dice score"
+    return tp * 2.0 / (tp * 2.0 + fn + fp), "dice score"
 
 
 def hausdorff_distance(gt_image, predicted_image):
@@ -144,8 +143,7 @@ def sensitivity(gt_image, predicted_image, threshold=predefined_threshold):
 
     tp += 1 # add 1 to avoid division by zero
 
-    return tp * 2.0 / (tp * 2.0 + fn), \
-           "sensitivity"
+    return tp * 2.0 / (tp * 2.0 + fn), "sensitivity"
 
 
 def specificity(gt_image, predicted_image, threshold=predefined_threshold):
@@ -168,8 +166,7 @@ def specificity(gt_image, predicted_image, threshold=predefined_threshold):
 
     tn += 1 # add 1 to avoid division by zero
 
-    return tn / (tn + fp), \
-           "specificity"
+    return tn / (tn + fp), "specificity"
 
 
 def get_img_row(overall_img, img_size, row, channels=10):
