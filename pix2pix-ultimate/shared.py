@@ -5,7 +5,6 @@ import scipy.misc
 import time
 import tensorflow as tf
 from glob import glob
-from metrics import *
 from ops import *
 from six.moves import xrange
 from utils import *
