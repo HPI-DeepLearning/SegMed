@@ -257,7 +257,7 @@ def surface_distances(input1, input2, voxelspacing=None, connectivity=1.0):
 
 
 if __name__ == '__main__':
-    images = prepare_images(file='test-x/test_0118.png')
+    images = prepare_images(file='test_data/test_0118.png')
     metrics = execute_metrics(images, [dice_score, specificity, sensitivity, hausdorff_distance])
     # slices(rows) x metrics x 3(tumor regions)
     print(metrics)
