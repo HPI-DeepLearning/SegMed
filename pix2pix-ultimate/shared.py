@@ -1,12 +1,12 @@
 from __future__ import division
+import numpy as np
 import os
 import scipy.misc
 import time
-import numpy as np
 import tensorflow as tf
 from glob import glob
-from six.moves import xrange
 from ops import *
+from six.moves import xrange
 from utils import *
 
 
@@ -345,6 +345,7 @@ def sampler(pix, image, y=None):
         return tf.nn.tanh(pix.d8)
 
 def save(pix, checkpoint_dir, step):
+    """Saves the model"""
     model_name = "pix2pix.model"
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
@@ -357,6 +358,7 @@ def save(pix, checkpoint_dir, step):
                     global_step=step)
 
 def load(pix, checkpoint_dir):
+    """Loads the model"""
     print(" [*] Reading checkpoint...")
 
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
