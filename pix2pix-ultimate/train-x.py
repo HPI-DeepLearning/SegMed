@@ -9,7 +9,7 @@ class pix():
     batch_size = 24
     gf_dim = 128
     df_dim = 128
-    pix.lr = 0.0002
+    lr = 0.0002
 	# phase is train, test or contest
     phase = 'train'
     
