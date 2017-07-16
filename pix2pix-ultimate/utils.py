@@ -12,11 +12,12 @@ from time import gmtime, strftime
 # -----------------------------
 # new added functions for pix2pix
 
-def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
+def load_data(image_path, image_size, input_c_dim, output_c_dim, is_train=False):
     input_img = imread(image_path)
     images = np.split(input_img, input_c_dim + output_c_dim, axis=1)
 
-    offset = 16
+    half_offset = 8
+    offset = half_offset * 2
     hypersize = image_size + offset
     fullsize = 256 + offset
 
@@ -36,7 +37,10 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, flip=True):
         image = np.append(image, np.zeros((right, image.shape[1])), axis=0)
 
         tmp = scipy.misc.imresize(image, [hypersize, hypersize], interp='nearest')
-        image = tmp[h1:h1+image_size, w1:w1+image_size]
+        if is_train:
+            image = tmp[half_offset:half_offset+image_size, half_offset:half_offset+image_size]
+        else:
+            image = tmp[h1:h1+image_size, w1:w1+image_size]
         image = image/127.5 - 1.
 		
         conv.append(image)

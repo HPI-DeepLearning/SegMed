@@ -1,25 +1,29 @@
 from __future__ import division
+import numpy as np
 import os
 import scipy.misc
 import time
-import numpy as np
 import tensorflow as tf
 from glob import glob
-from six.moves import xrange
 from ops import *
+from six.moves import xrange
 from utils import *
 
 
 # Init Parameters
 
 def init(pix):
+
+    if pix.phase != 'train':
+        pix.batch_size = 1
+
     pix.image_size = 256 // pix.speed_factor
     pix.epoch = 100
-    pix.lr = 0.0002
     pix.beta1 = 0.5
     pix.checkpoint_dir = './checkpoint-{}'.format(pix.axis)
     pix.sample_dir = './sample-{}'.format(pix.axis)
     pix.test_dir = './test-{}'.format(pix.axis)
+    pix.contest_dir = './contest-{}'.format(pix.axis)
     pix.L1_lambda = 100.0
 
     # Batch normalization : deals with poor initialization helps gradient flow
@@ -43,7 +47,7 @@ def init(pix):
     pix.g_bn_d5 = batch_norm(name='g_bn_d5')
     pix.g_bn_d6 = batch_norm(name='g_bn_d6')
     pix.g_bn_d7 = batch_norm(name='g_bn_d7')
-
+    
 
 # Declare Model
 
@@ -138,7 +142,7 @@ def train(pix):
 
         for idx in xrange(0, batch_idxs):
             batch_files = data[idx*pix.batch_size:(idx+1)*pix.batch_size]
-            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for batch_file in batch_files]
+            batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_train=True) for batch_file in batch_files]
 
             batch_images = np.array(batch).astype(np.float32)
                 
@@ -341,6 +345,7 @@ def sampler(pix, image, y=None):
         return tf.nn.tanh(pix.d8)
 
 def save(pix, checkpoint_dir, step):
+    """Saves the model"""
     model_name = "pix2pix.model"
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
@@ -353,6 +358,7 @@ def save(pix, checkpoint_dir, step):
                     global_step=step)
 
 def load(pix, checkpoint_dir):
+    """Loads the model"""
     print(" [*] Reading checkpoint...")
 
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
@@ -371,17 +377,10 @@ def test(pix):
     init_op = tf.global_variables_initializer()
     pix.sess.run(init_op)
 
+    base_dir = './datasets/{0}/test/'.format(pix.dataset_name)
+    target_dir = './{}/'.format(pix.test_dir)
+    
     sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
-
-    # load testing input
-    print("Loading testing images ...")
-    sample = [load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim) for sample_file in sample_files]
-
-    sample_images = np.array(sample).astype(np.float32)
-    sample_images = [sample_images[i:i+pix.batch_size]
-                        for i in xrange(0, len(sample_images), pix.batch_size)]
-    sample_images = np.array(sample_images)
-    print(sample_images.shape)
 
     start_time = time.time()
     if load(pix, pix.checkpoint_dir):
@@ -389,23 +388,31 @@ def test(pix):
     else:
         print(" [!] Load failed...")
 
-    for i, sample_image in enumerate(sample_images):
-        if sample_image.shape[0] != pix.batch_size:
-            print('Incomplete batch.')
-            continue
+    for i, sample_file in enumerate(sample_files):
             
+        sample_image = load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim)
+        sample_image = np.array([sample_image])    
+        
         print("sampling image ", i)
         samples = pix.sess.run(
             pix.fake_B_sample,
             feed_dict={pix.real_data: sample_image}
         )
 
-        combined = np.concatenate((sample_image, samples), axis=3)
-        arr = np.split(combined, combined.shape[3], axis=3)
+        samples = np.sign(samples)
+        
+        if pix.phase == 'test':
+            combined = np.concatenate((sample_image, samples), axis=3)
+            arr = np.split(combined, combined.shape[3], axis=3)
 
-        con = np.concatenate(arr, axis=2)
-        save_images(con, [pix.batch_size, 1],
-                    './{}/test_{:04d}.png'.format(pix.test_dir, i))
+            con = np.concatenate(arr, axis=2)
+            save_images(con, [pix.batch_size, 1], sample_file.replace(base_dir, target_dir).replace('combined', pix.phase))
+        else:
+            combined = samples[:, 8:pix.image_size-8, 8:pix.image_size-8, :]
+            arr = np.split(combined, combined.shape[3], axis=3)
+
+            con = np.concatenate(arr, axis=2)
+            save_images(con, [pix.batch_size, 1], sample_file.replace(base_dir, target_dir).replace('combined', pix.phase))
 
 # Run The Model
 def run(pix):
