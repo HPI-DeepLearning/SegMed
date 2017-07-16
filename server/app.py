@@ -1,5 +1,10 @@
 from flask import send_from_directory
 import os
+import re
+import base64
+import json
+from io import BytesIO
+from PIL import Image
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
@@ -14,6 +19,15 @@ app.config['SECRET_KEY'] = 'something unique and secret'
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/tumor', methods=['POST'])
+def upload_tumor():
+    image_data = re.sub('^data:image/.+;base64,', '', request.form['data'])
+    image = Image.open(BytesIO(base64.b64decode(image_data)))
+    print(image_data[:50])
+    return json.dumps({'result': 'success'}), 200, {'ContentType': 'application/json'}
+
 
 
 @app.route('/', methods=['GET', 'POST'])
