@@ -24,27 +24,46 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_tumor_regions(url):
+    # Remove base64 prefix -> get only image code
+    image_data = re.sub('^data:image/.+;base64,', '', url)
+    image = Image.open(BytesIO(base64.b64decode(image_data)))
+    # Generate random hash for file storage
+    filename = uuid.uuid4().hex + '.png'
+    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    scipy.misc.imsave(path, image)
+    # Execute pix2pix model and read output images in as base64 url
+    paths = execute(pix, path, with_gt=False)
+    for path in paths:
+        with open(path, "rb") as f:
+            yield {
+                'filename': os.path.split(path)[1],
+                'url': base64.b64encode(f.read()).decode('UTF-8'),
+            }
+
+def get_survival_rate(url):
+    # TODO:
+    return '?'
+
+def get_tumor_type(url):
+    # TODO
+    return 'High-grade glioma'
+
 
 @app.route('/tumor/', methods=['POST'])
 def upload_tumor():
     if not request.data:
-        return json.dumps({'result': 'failure'}), 200, {'ContentType': 'application/json'}
+        return json.dumps({'err': 'Not data which can be processed'}), 400, {'ContentType': 'application/json'}
     data = json.loads(request.data.decode('UTF-8'))
-    # return json.dumps({'result': 'success', 'url': data['url']}), 200, {'ContentType': 'application/json'}
-    image_data = re.sub('^data:image/.+;base64,', '', data['url'])
-    image = Image.open(BytesIO(base64.b64decode(image_data)))
-    filename = uuid.uuid4().hex + '.png'
-    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    scipy.misc.imsave(path, image)
-    paths = execute(pix, path, with_gt=False)
-    images = []
-    for path in paths:
-        with open(path, "rb") as f:
-            images.append({
-                'filename': os.path.split(path)[1],
-                'url': base64.b64encode(f.read()).decode('UTF-8'),
-            })
-    return json.dumps({'result': 'success', 'results': images}), 200, {'ContentType': 'application/json'}
+    return (
+        json.dumps({
+            'tumor': list(get_tumor_regions(data['url'])),
+            'survival_rate': get_survival_rate(data['url']),
+            'tumor_type': get_tumor_type(data['url']),
+        }),
+        200,
+        {'ContentType': 'application/json'}
+    )
 
 
 
