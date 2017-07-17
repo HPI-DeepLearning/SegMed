@@ -2,6 +2,8 @@ pix2pix-ultimate/datasets/
 pix2pix-ultimate/sample-x/
 pix2pix-ultimate/test-x/
 pix2pix-ultimate/checkpoint-x/
+pix2pix-ultimate/checkpoint-z/
+pix2pix-ultimate/val/
 pix2pix-ultimate/input/
 pix2pix-ultimate/output/
 server/uploads/

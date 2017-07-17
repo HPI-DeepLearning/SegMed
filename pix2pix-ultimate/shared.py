@@ -359,10 +359,10 @@ def save(pix, checkpoint_dir, step):
 
 def load(pix, checkpoint_dir):
     """Loads the model"""
-    print(" [*] Reading checkpoint...")
 
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
+    print(" [*] Reading checkpoint from {}...".format(checkpoint_dir))
     ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
     if ckpt and ckpt.model_checkpoint_path:
         ckpt_name = os.path.basename(ckpt.model_checkpoint_path)

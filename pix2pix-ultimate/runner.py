@@ -1,14 +1,17 @@
 from shared import *
 
+IMG_SIZE = 256  # 128
+
 class pix_env():
-    axis = 'x'
-    dataset_name = 'Png-HGG7b'
+    axis = 'z'  # 'x'
+    dataset_name = 'Png-Combined_ao'  # 'Png-HGG7b'
     input_c_dim = 4
     output_c_dim = 3
-    speed_factor = 2
-    batch_size = 16
-    gf_dim = 64
-    df_dim = 64
+    speed_factor = 256 // IMG_SIZE
+    batch_size = 1
+    gf_dim = 128
+    df_dim = 128
+    lr = 0.00005 # 0.0002
     phase = 'test'
 
 def build():
@@ -37,12 +40,13 @@ def store_input(pix, dir_='val', name='Brats17_2013_10_1_combined.nx.77.png', on
     # load full image
     path = os.path.join(dir_, name)
     sample = load_data(path, pix.image_size, pix.input_c_dim, pix.output_c_dim if not only_output else 0)
-    np.set_printoptions(threshold=np.inf)
-    if 128*128 + sample[:,:,0].sum() < 100:  # black pixels are -1
-        return False
+    # np.set_printoptions(threshold=np.inf)
     if only_output:
         scipy.misc.imsave(os.path.join('output', 'src_' + name), sample[:,:,2])
     else:
+        if IMG_SIZE*IMG_SIZE + sample[:,:,0].sum() < 100:  # black pixels are -1
+            # Ignore brain slices having no tumor in it
+            return False
         o = np.concatenate([sample[:,:,3], sample[:,:,4], sample[:,:,5], sample[:,:,6]], axis=1)
         scipy.misc.imsave(os.path.join('input', name), o)
         scipy.misc.imsave(os.path.join('output', 'src_' + name), sample[:,:,5])
@@ -57,21 +61,25 @@ def read_input(pix, dir_='input', name='Brats17_2013_10_1_combined.nx.77.png'):
 color1 = [0.96, 0.76, 0.2]
 color2 = [0.82, 0.36, 0.18]
 color3 = [0.16, 0.56, 0.78]
-img1 = np.array([[color1] * 128] * 128)
-img2 = np.array([[color2] * 128] * 128)
-img3 = np.array([[color3] * 128] * 128)
+img1 = np.array([[color1] * IMG_SIZE] * IMG_SIZE)
+img2 = np.array([[color2] * IMG_SIZE] * IMG_SIZE)
+img3 = np.array([[color3] * IMG_SIZE] * IMG_SIZE)
+img_empty = np.ones((IMG_SIZE, IMG_SIZE, 3))
 color_images = np.array([img1, img2, img3])
 
 def store_output(pix, result, name='Brats17_2013_10_1_combined.nx.77.png'):
-    filler = -np.ones((128, 128))
+    filler = -np.ones((IMG_SIZE, IMG_SIZE))
     for i in range(3):
         region_img = result[:, :, i]
         alphas = (region_img + 1) / 2
-        rgba_img = np.array([
-            color_images[i,:,:,0],
-            color_images[i,:,:,1],
-            color_images[i,:,:,2],
-            region_img]).transpose((1, 2, 0))
+        if alphas.sum() < 1:
+            rgba_img = img_empty
+        else:
+            rgba_img = np.array([
+                color_images[i,:,:,0],
+                color_images[i,:,:,1],
+                color_images[i,:,:,2],
+                region_img]).transpose((1, 2, 0))
         scipy.misc.imsave(os.path.join('output', str(i) +'_' + name), rgba_img)
     # raise ValueError('STOP')
     # combined = np.concatenate([result[:,:,0], result[:,:,1], result[:,:,2]])
