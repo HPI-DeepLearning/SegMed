@@ -14,8 +14,8 @@ from utils import *
 
 def init(pix):
 
-    if pix.phase != 'train':
-        pix.batch_size = 1
+    # if pix.phase != 'train':
+    #     pix.batch_size = 1
 
     pix.image_size = 256 // pix.speed_factor
     pix.epoch = 100
@@ -47,7 +47,7 @@ def init(pix):
     pix.g_bn_d5 = batch_norm(name='g_bn_d5')
     pix.g_bn_d6 = batch_norm(name='g_bn_d6')
     pix.g_bn_d7 = batch_norm(name='g_bn_d7')
-    
+
 
 # Declare Model
 
@@ -108,7 +108,7 @@ def sample_model(pix, epoch, idx):
     )
     samples = np.split(samples, pix.output_c_dim, axis=3)
     samples = np.concatenate(samples, axis=2)
-	
+
     save_images(samples, [pix.batch_size, 1],
                 './{}/train_{:02d}_{:04d}.png'.format(pix.sample_dir, epoch, idx))
     print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
@@ -145,22 +145,22 @@ def train(pix):
             batch = [load_data(batch_file, pix.image_size, pix.input_c_dim, pix.output_c_dim, is_train=True) for batch_file in batch_files]
 
             batch_images = np.array(batch).astype(np.float32)
-                
+
             # Update D network
             _, summary_str = pix.sess.run([d_optim, pix.d_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-            
+
             # Update G network
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-            
+
             # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
             _, summary_str = pix.sess.run([g_optim, pix.g_sum],
                                             feed_dict={ pix.real_data: batch_images })
             pix.writer.add_summary(summary_str, counter)
-            
+
             errD_fake = pix.d_loss_fake.eval({pix.real_data: batch_images})
             errD_real = pix.d_loss_real.eval({pix.real_data: batch_images})
             errG = pix.g_loss.eval({pix.real_data: batch_images})
@@ -363,7 +363,6 @@ def load(pix, checkpoint_dir):
 
     model_dir = "%s_%s_%s" % (pix.dataset_name, pix.batch_size, pix.image_size)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
-
     ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
     if ckpt and ckpt.model_checkpoint_path:
         ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
@@ -379,7 +378,7 @@ def test(pix):
 
     base_dir = './datasets/{0}/test/'.format(pix.dataset_name)
     target_dir = './{}/'.format(pix.test_dir)
-    
+
     sample_files = glob('./datasets/{0}/test/*.n{1}.*.png'.format(pix.dataset_name, pix.axis))
 
     start_time = time.time()
@@ -389,10 +388,10 @@ def test(pix):
         print(" [!] Load failed...")
 
     for i, sample_file in enumerate(sample_files):
-            
+
         sample_image = load_data(sample_file, pix.image_size, pix.input_c_dim, pix.output_c_dim)
-        sample_image = np.array([sample_image])    
-        
+        sample_image = np.array([sample_image])
+
         print("sampling image ", i)
         samples = pix.sess.run(
             pix.fake_B_sample,
@@ -400,7 +399,7 @@ def test(pix):
         )
 
         samples = np.sign(samples)
-        
+
         if pix.phase == 'test':
             combined = np.concatenate((sample_image, samples), axis=3)
             arr = np.split(combined, combined.shape[3], axis=3)
@@ -426,7 +425,7 @@ def run(pix):
     with tf.Session() as sess:
         pix.sess = sess
         build_model(pix)
-    
+
         if pix.phase == 'train':
             train(pix)
         else:

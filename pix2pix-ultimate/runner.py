@@ -33,17 +33,19 @@ def run(pix, input_image, name):
     )
     return samples[0]
 
-def store_input(pix, dir_='val', name='Brats17_2013_10_1_combined.nx.77.png'):
+def store_input(pix, dir_='val', name='Brats17_2013_10_1_combined.nx.77.png', only_output=False):
     # load full image
     path = os.path.join(dir_, name)
-    sample = load_data(path, pix.image_size, pix.input_c_dim, pix.output_c_dim)
-    sample_images = np.array(sample).astype(np.float32)
+    sample = load_data(path, pix.image_size, pix.input_c_dim, pix.output_c_dim if not only_output else 0)
     np.set_printoptions(threshold=np.inf)
-    if 128*128 + sample[:,:,0].sum() < 100:
+    if 128*128 + sample[:,:,0].sum() < 100:  # black pixels are -1
         return False
-    o = np.concatenate([sample[:,:,3], sample[:,:,4], sample[:,:,5], sample[:,:,6]], axis=1)
-    scipy.misc.imsave(os.path.join('input', name), o)
-    scipy.misc.imsave(os.path.join('output', 'src_' + name), sample[:,:,5])
+    if only_output:
+        scipy.misc.imsave(os.path.join('output', 'src_' + name), sample[:,:,2])
+    else:
+        o = np.concatenate([sample[:,:,3], sample[:,:,4], sample[:,:,5], sample[:,:,6]], axis=1)
+        scipy.misc.imsave(os.path.join('input', name), o)
+        scipy.misc.imsave(os.path.join('output', 'src_' + name), sample[:,:,5])
     return True
 
 def read_input(pix, dir_='input', name='Brats17_2013_10_1_combined.nx.77.png'):
@@ -59,6 +61,7 @@ img1 = np.array([[color1] * 128] * 128)
 img2 = np.array([[color2] * 128] * 128)
 img3 = np.array([[color3] * 128] * 128)
 color_images = np.array([img1, img2, img3])
+
 def store_output(pix, result, name='Brats17_2013_10_1_combined.nx.77.png'):
     filler = -np.ones((128, 128))
     for i in range(3):
@@ -74,14 +77,24 @@ def store_output(pix, result, name='Brats17_2013_10_1_combined.nx.77.png'):
     # combined = np.concatenate([result[:,:,0], result[:,:,1], result[:,:,2]])
     # scipy.misc.imsave(os.path.join('output', name), result[:,:,:3])
 
+def execute(pix, img_path, with_gt=True):
+    generated = []
+    print('Executing on {}'.format(img_path))
+    dir_, name = os.path.split(img_path)
+    if not store_input(pix, dir_, name, not with_gt):
+        print('Failed for {}'.format(name))
+        return generated
+    generated.append(os.path.join('output', 'src_' + name))
+    img = read_input(pix, 'input' if with_gt else 'uploads', name)
+    result = run(pix, img, name)
+    store_output(pix, result, name)
+    generated.append(os.path.join('output', '0_' + name))
+    generated.append(os.path.join('output', '1_' + name))
+    generated.append(os.path.join('output', '2_' + name))
+    return generated
+
+
 if __name__ == '__main__':
     pix = build()
     for img_path in glob('val/*.n{}.*.png'.format(pix.axis)):
-        dir_, name = os.path.split(img_path)
-        # name='Brats17_2013_10_1_combined.nx.77.png'
-        if not store_input(pix, dir_, name):
-            print('Skipping {}'.format(name))
-            continue
-        img = read_input(pix, 'input', name)
-        result = run(pix, img, name)
-        store_output(pix, result, name)
+        execute(pix, img_path)
