@@ -2,6 +2,7 @@ pix2pix-ultimate/datasets/
 pix2pix-ultimate/sample-x/
 pix2pix-ultimate/test-x/
 pix2pix-ultimate/checkpoint-x/
+server/uploads/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
