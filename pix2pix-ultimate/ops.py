@@ -14,7 +14,7 @@ class batch_norm(object):
             self.name = name
 
     def __call__(self, x, train=True):
-        return tf.contrib.layers.batch_norm(x, decay=self.momentum, updates_collections=None, epsilon=self.epsilon, scale=True, scope=self.name)
+        return tf.contrib.layers.batch_norm(x, decay=self.momentum, fused=False, updates_collections=None, epsilon=self.epsilon, scale=True, scope=self.name)
 
 def binary_cross_entropy(preds, targets, name=None):
     """Computes binary cross entropy given `preds`.
@@ -41,7 +41,7 @@ def conv_cond_concat(x, y):
     return tf.concat([x, y*tf.ones([x_shapes[0], x_shapes[1], x_shapes[2], y_shapes[3]])], 3)
 
 def conv2d(input_, output_dim, 
-           k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
+           k_h=6, k_w=6, d_h=2, d_w=2, stddev=0.02,
            name="conv2d"):
     with tf.variable_scope(name):
         w = tf.get_variable('w', [k_h, k_w, input_.get_shape()[-1], output_dim],
@@ -54,7 +54,7 @@ def conv2d(input_, output_dim,
         return conv
 
 def deconv2d(input_, output_shape,
-             k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
+             k_h=6, k_w=6, d_h=2, d_w=2, stddev=0.02,
              name="deconv2d", with_w=False):
     with tf.variable_scope(name):
         # filter : [height, width, output_channels, in_channels]

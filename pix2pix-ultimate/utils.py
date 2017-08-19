@@ -38,9 +38,9 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, is_train=False)
 
         tmp = scipy.misc.imresize(image, [hypersize, hypersize], interp='nearest')
         if is_train:
-            image = tmp[offset:offset+image_size, offset:offset+image_size]
-        else:
             image = tmp[h1:h1+image_size, w1:w1+image_size]
+        else:
+            image = tmp[half_offset:half_offset+image_size, half_offset:half_offset+image_size]
         image = image/127.5 - 1.
 		
         conv.append(image)
