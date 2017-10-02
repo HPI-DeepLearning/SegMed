@@ -14,6 +14,7 @@ from utils import *
 
 def init(pix):
 
+    # when we are in testmode we always use a batch size of 1
     if pix.phase != 'train':
         pix.batch_size = 1
 
@@ -23,7 +24,6 @@ def init(pix):
     pix.checkpoint_dir = './checkpoint-{}'.format(pix.axis)
     pix.sample_dir = './sample-{}'.format(pix.axis)
     pix.test_dir = './test-{}'.format(pix.axis)
-    pix.contest_dir = './contest-{}'.format(pix.axis)
     pix.L1_lambda = 100.0
 
     # Batch normalization : deals with poor initialization helps gradient flow
@@ -409,7 +409,6 @@ def test(pix):
             combined = samples[:, 8:pix.image_size-8, 8:pix.image_size-8, :]
             arr = np.split(combined, combined.shape[3], axis=3)
 
-            # TODO convert data
             con = np.concatenate(arr, axis=2)
             save_images(con, [pix.batch_size, 1], sample_file.replace(base_dir, target_dir).replace('combined', pix.phase))
 
