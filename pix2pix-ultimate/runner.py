@@ -2,6 +2,10 @@ from shared import *
 
 IMG_SIZE = 256  # 128
 
+# TK: This file is used as a interface between python server and Keras model
+# You can load the trained network and execute it on passed data if it has
+# a predetermined shape
+
 class pix_env():
     axis = 'z'  # 'x'
     dataset_name = 'Png-Combined_ao'  # 'Png-HGG7b'

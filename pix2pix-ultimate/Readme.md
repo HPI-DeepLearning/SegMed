@@ -33,10 +33,16 @@ Running the train-z.py creates a few folders.
 
 # Start python server
 
+For our react app which is located at /webapp/ we've set up a flask server. Right
+now it's able to receive the four input modalities of a brain cross-section. It will
+transform it and execute the segmentation network on it. The output is again transformed
+to have three seperate images for each classified tumor region. Each one has another color
+(similar to the region colors on the BraTS info website).
+
 ### Requirements
 
 `pip install flask`  
-`export FLASK_APP=app.py`
+`export FLASK_APP=server.py`
 
 ### Usage
 `flask run`
