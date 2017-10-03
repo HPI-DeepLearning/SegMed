@@ -29,3 +29,14 @@ Running the train-z.py creates a few folders.
 - sample-z contains validation output
 - test-z contains testing output
 - log contains logging informations and runtime errors
+
+
+# Start python server
+
+### Requirements
+
+`pip install flask`  
+`export FLASK_APP=app.py`
+
+### Usage
+`flask run`

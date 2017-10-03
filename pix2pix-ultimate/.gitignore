@@ -5,3 +5,4 @@ datasets/*
 checkpoint/*
 val/*
 *.pyc
+uploads/*

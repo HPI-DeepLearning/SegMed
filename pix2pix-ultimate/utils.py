@@ -42,7 +42,7 @@ def load_data(image_path, image_size, input_c_dim, output_c_dim, is_train=False)
         else:
             image = tmp[half_offset:half_offset+image_size, half_offset:half_offset+image_size]
         image = image/127.5 - 1.
-		
+
         conv.append(image)
 
     return np.stack(conv, axis=2)
