@@ -1,3 +1,5 @@
+segmed
+.idea/
 pix2pix-ultimate/datasets/
 pix2pix-ultimate/sample-x/
 pix2pix-ultimate/test-x/
@@ -116,3 +118,5 @@ pip-selfcheck.json
 *.whl
 
 /thomas/output/
+segmed/ #virtual environment
+.idea/ # pycharm stuff
